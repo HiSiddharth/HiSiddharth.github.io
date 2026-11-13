@@ -1,0 +1,32 @@
+name: CI Build Check (SidOS)
+
+on:
+  pull_request:
+    branches: ["dev", "main"]
+
+jobs:
+  verify-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: "yarn"
+
+      - name: Enable Corepack & Install Dependencies
+        run: |
+          corepack enable
+          yarn install --frozen-lockfile
+
+      - name: Prebuild Virtual Filesystem
+        run: yarn build:prebuild
+
+      - name: Build Static Export
+        run: yarn build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
