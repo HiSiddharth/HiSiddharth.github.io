@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Next.js & Build Artifacts
+.next/
+out/
+.swc/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment variables & secrets
+.env*
+certificates/
+
+# Testing & Coverage
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Logs
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db
+*.bak
+
+# Virtual Filesystem generated indexes (compiled by prebuild on CI)
+public/private/
+public/robots.txt
+public/rss.xml
+public/sitemap.xml
+public/.index/*
+
+# Track all User Profile Portfolio Data (Desktop, Wallpapers, Music, Pictures, Start Menu)
+# But ignore runtime snapshots or temporary browser uploads
+public/Users/Public/Snapshots/
