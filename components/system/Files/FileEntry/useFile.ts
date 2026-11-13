@@ -31,6 +31,7 @@ const useFile = (url: string, path: string): UseFile => {
     }
 
     if (pid === "Fly") {
+      // oxlint-disable-next-line react/todo
       const { countFlies, spawnFly } = await import("utils/spawnFly");
       const current = countFlies();
       const toSpawn = Math.min(5, Math.max(0, 30 - current));

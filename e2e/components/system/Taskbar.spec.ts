@@ -193,7 +193,7 @@ test.describe("entries", () => {
 
     test("has items", async ({ browserName, page }) => {
       const entries = TASKBAR_ENTRIES_MENU_ITEMS(
-        await offersTalos({ browserName, page })
+        offersTalos({ browserName, page })
       );
 
       await contextMenuHasCount(entries.length, { page });
@@ -205,7 +205,7 @@ test.describe("entries", () => {
     });
 
     test("has Talos button off until shown", async ({ browserName, page }) => {
-      test.skip(!(await offersTalos({ browserName, page })), "no AI support");
+      test.skip(!offersTalos({ browserName, page }), "no AI support");
 
       await talosButtonIsHidden({ page });
       // Fails if it was on, as the menu entry toggles it
