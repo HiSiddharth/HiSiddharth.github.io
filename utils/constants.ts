@@ -381,10 +381,10 @@ export const PACKAGE_DATA = {
   author: {
     email: "siddharthrai2468@gmail.com",
     name: "Siddharth Rai",
-    url: "https://hisiddharth.github.io/SidOS",
+    url: "https://hisiddharth.github.io/SidOS.github.io",
   },
   description:
-    "SidOS — Applied AI Engineer, Automation Architect & Creative Technologist",
+    "SidOS - Applied AI Engineer, Automation Architect & Creative Technologist",
   license: "MIT",
   version: "1.0.0",
 };
