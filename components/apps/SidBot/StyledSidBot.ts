@@ -5,30 +5,36 @@ const StyledSidBot = styled.div`
   color: #e2e8f0;
   display: flex;
   flex-direction: column;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   height: 100%;
   overflow: hidden;
   width: 100%;
 
   .sidbot-header {
     align-items: center;
-    background: linear-gradient(90deg, #0f172a 0%, #111c33 100%);
-    border-bottom: 1px solid rgba(56, 189, 248, 0.22);
+    background: rgb(15 23 42 / 92%);
+    border-bottom: 1px solid rgb(148 163 184 / 14%);
     display: flex;
-    gap: 12px;
+    flex-shrink: 0;
+    gap: 10px;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 8px 14px;
   }
 
   .sidbot-identity {
     align-items: center;
     display: flex;
-    gap: 12px;
+    gap: 10px;
   }
 
   .sidbot-title h1 {
     color: #f8fafc;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     margin: 0;
   }
@@ -37,56 +43,35 @@ const StyledSidBot = styled.div`
     align-items: center;
     color: #94a3b8;
     display: flex;
-    font-family: monospace;
     font-size: 11px;
     gap: 6px;
-    margin-top: 2px;
+    margin-top: 1px;
   }
 
   .sidbot-dot {
     border-radius: 50%;
+    flex-shrink: 0;
     height: 7px;
     width: 7px;
   }
 
   .inspector-toggle {
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgb(30 41 59 / 80%);
+    border: 1px solid rgb(148 163 184 / 25%);
     border-radius: 6px;
-    color: #7dd3fc;
+    color: #94a3b8;
     cursor: pointer;
+    flex-shrink: 0;
     font-family: monospace;
     font-size: 11px;
-    padding: 6px 10px;
-    transition: background 0.15s;
-
-    &:hover {
-      background: rgba(56, 189, 248, 0.24);
-    }
-  }
-
-  .quick-prompts {
-    background: #0f172a;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px 14px;
-  }
-
-  .chip-btn {
-    background: rgba(30, 41, 59, 0.9);
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    border-radius: 999px;
-    color: #cbd5e1;
-    cursor: pointer;
-    font-size: 11.5px;
-    padding: 4px 10px;
+    padding: 5px 9px;
     transition: all 0.15s;
 
-    &:hover {
-      border-color: #38bdf8;
-      color: #ffffff;
+    &:hover,
+    &[data-active="true"] {
+      background: rgb(56 189 248 / 14%);
+      border-color: rgb(56 189 248 / 45%);
+      color: #7dd3fc;
     }
   }
 
@@ -101,81 +86,180 @@ const StyledSidBot = styled.div`
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    min-height: 0;
     overflow-y: auto;
-    padding: 14px;
+    padding: 16px;
+    scrollbar-color: rgb(148 163 184 / 25%) transparent;
+    scrollbar-width: thin;
   }
 
   .msg {
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
-    line-height: 1.5;
-    max-width: 86%;
-    padding: 10px 13px;
-    white-space: pre-wrap;
-    word-break: break-word;
+    line-height: 1.55;
+    max-width: 82%;
+    overflow-wrap: anywhere;
+    padding: 10px 14px;
+    user-select: text;
   }
 
   .msg.user {
     align-self: flex-end;
     background: #1d4ed8;
-    border: 1px solid #3b82f6;
-    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    color: #fff;
+    white-space: pre-wrap;
   }
 
   .msg.bot {
     align-self: flex-start;
     background: #131c2e;
-    border: 1px solid rgba(56, 189, 248, 0.22);
+    border: 1px solid rgb(148 163 184 / 14%);
+    border-bottom-left-radius: 4px;
     color: #e2e8f0;
+  }
+
+  .md-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    p {
+      margin: 0;
+      user-select: text;
+    }
+
+    strong {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .md-heading {
+      color: #7dd3fc;
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    ul,
+    ol {
+      margin: 2px 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 2px 0;
+      user-select: text;
+    }
+
+    code {
+      background: rgb(15 23 42 / 90%);
+      border: 1px solid rgb(148 163 184 / 20%);
+      border-radius: 4px;
+      color: #7dd3fc;
+      font-family: monospace;
+      font-size: 11.5px;
+      padding: 1px 5px;
+      user-select: text;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid rgb(148 163 184 / 20%);
+      border-radius: 6px;
+      margin: 2px 0;
+      overflow-x: auto;
+      padding: 8px 10px;
+
+      code {
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+    }
+
+    a {
+      color: #38bdf8;
+      cursor: pointer;
+      text-decoration: underline;
+    }
   }
 
   .msg-meta {
     color: #64748b;
     font-family: monospace;
-    font-size: 10.5px;
+    font-size: 10px;
     margin-top: 6px;
+    user-select: text;
+  }
+
+  .quick-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .chip-btn {
+    background: rgb(30 41 59 / 75%);
+    border: 1px solid rgb(56 189 248 / 24%);
+    border-radius: 999px;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 11.5px;
+    padding: 5px 11px;
+    transition: all 0.15s;
+
+    &:hover {
+      background: rgb(56 189 248 / 14%);
+      border-color: #38bdf8;
+      color: #fff;
+    }
   }
 
   .action-btn {
-    background: rgba(16, 185, 129, 0.16);
-    border: 1px solid rgba(52, 211, 153, 0.45);
+    background: rgb(16 185 129 / 12%);
+    border: 1px solid rgb(52 211 153 / 35%);
     border-radius: 6px;
     color: #6ee7b7;
     cursor: pointer;
     display: inline-block;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
     margin-top: 8px;
-    padding: 5px 10px;
+    padding: 4px 10px;
 
     &:hover {
-      background: rgba(16, 185, 129, 0.3);
+      background: rgb(16 185 129 / 24%);
     }
   }
 
   .rag-drawer {
     background: #080c14;
-    border-left: 1px solid rgba(56, 189, 248, 0.2);
+    border-left: 1px solid rgb(148 163 184 / 14%);
+    flex-shrink: 0;
     font-family: monospace;
     font-size: 11px;
     overflow-y: auto;
     padding: 12px;
-    width: 240px;
+    user-select: text;
+    width: 230px;
   }
 
   .rag-drawer h2 {
     color: #38bdf8;
-    font-size: 12px;
-    margin: 0 0 8px;
+    font-size: 11.5px;
+    margin: 0 0 6px;
   }
 
   .rag-card {
     background: #0f172a;
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid rgb(148 163 184 / 16%);
     border-radius: 6px;
     margin-bottom: 8px;
     padding: 8px;
+    user-select: text;
   }
 
   .rag-score {
@@ -184,22 +268,25 @@ const StyledSidBot = styled.div`
   }
 
   .input-bar {
-    background: #0f172a;
-    border-top: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgb(15 23 42 / 92%);
+    border-top: 1px solid rgb(148 163 184 / 14%);
     display: flex;
+    flex-shrink: 0;
     gap: 8px;
     padding: 10px 14px;
   }
 
   .input-bar input {
     background: #020617;
-    border: 1px solid rgba(148, 163, 184, 0.3);
+    border: 1px solid rgb(148 163 184 / 24%);
     border-radius: 8px;
     color: #f8fafc;
+    cursor: text;
     flex: 1;
     font-size: 13px;
     outline: none;
-    padding: 9px 12px;
+    padding: 8px 12px;
+    user-select: text;
 
     &:focus {
       border-color: #38bdf8;
@@ -210,15 +297,15 @@ const StyledSidBot = styled.div`
     background: #0284c7;
     border: none;
     border-radius: 8px;
-    color: #ffffff;
+    color: #fff;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    padding: 0 16px;
+    padding: 0 15px;
 
     &:disabled {
       cursor: not-allowed;
-      opacity: 0.5;
+      opacity: 45%;
     }
   }
 `;

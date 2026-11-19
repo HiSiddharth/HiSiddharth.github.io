@@ -9,7 +9,10 @@ export const hasProcess = (process: Process): boolean => process !== NO_PROCESS;
 const { getCurrentState, Provider, useContextActions, useStateSelector } =
   contextActionSelectorFactory(useProcessContextState);
 
-export const useNextFocusableId = (id: string, stackOrder: string[]): string =>
+export const useNextFocusableId = (
+  id: string,
+  stackOrder: string[] = []
+): string =>
   useStateSelector(
     (state) =>
       stackOrder.find(

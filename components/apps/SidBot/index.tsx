@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import MarkdownText from "components/apps/SidBot/MarkdownText";
 import {
   buildOfflineFallbackReply,
+  fetchQueryVector,
   loadRagIndex,
   type RagIndex,
   type RetrievalHit,
   retrieveTopChunks,
+  streamWorkerReply,
 } from "components/apps/SidBot/ragEngine";
 import SidAvatar, { type AvatarMood } from "components/apps/SidBot/SidAvatar";
 import StyledSidBot from "components/apps/SidBot/StyledSidBot";
@@ -14,8 +17,9 @@ import AppContainer, {
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import { useProcessesActions } from "contexts/process";
 
-// Paste your Cloudflare Worker URL here once Groq is back up and deployed:
-const SIDBOT_WORKER_URL = process.env.NEXT_PUBLIC_SIDBOT_URL || "";
+const SIDBOT_WORKER_URL =
+  process.env.NEXT_PUBLIC_SIDBOT_URL ||
+  "https://sidbot9000-proxy.hisiddharth.workers.dev";
 
 interface ChatMessage {
   action?: string;
@@ -26,66 +30,111 @@ interface ChatMessage {
 }
 
 const QUICK_PROMPTS = [
-  "Pitch yourself in 30 seconds",
-  "How did you run Dual-LoRA on 8GB VRAM?",
-  "Tell me about Podpitara & SecureImmich",
-  "What are your hobbies outside code?",
+  // Core & Intro
+  { label: "30s Pitch", query: "Pitch yourself in 30 seconds" },
+  {
+    label: "Top Projects",
+    query: "What are some of Siddharth's best projects?",
+  },
+  {
+    label: "Tech Stack & AI",
+    query: "What tools and AI tech does Siddharth work with?",
+  },
+  {
+    label: "Outside Code",
+    query: "What are Siddharth's hobbies outside of work?",
+  },
+
+  // Career, Impact & How He Works
+  {
+    label: "Career Highlights",
+    query: "What are Siddharth's biggest career achievements?",
+  },
+  {
+    label: "How He Builds",
+    query: "How does Siddharth approach building and shipping projects?",
+  },
+  {
+    label: "Lessons Learned",
+    query: "What is a tough technical challenge Siddharth solved?",
+  },
+  {
+    label: "What's Next",
+    query: "What is Siddharth exploring or excited about right now?",
+  },
 ];
 
 const ACTION_LABELS: Record<string, string> = {
   github: "Open GitHub (HiSiddharth)",
   immich: "SecureImmich Info",
   linkedin: "Open LinkedIn",
-  lora: "Dual-LoRA Lab (Coming Next)",
   podpitara: "Podpitara Case Study",
-  resume: "Open Sanitized Resume PDF",
+  resume: "Open Resume PDF",
 };
 
 const SidBot: FC<ComponentProcessProps> = ({ id }) => {
   const containerProps = useAppContainer(id);
-const { open } = useProcessesActions();
+  const { setLoading } = containerProps;
+  const { open } = useProcessesActions();
 
-  const [ragIndex, setRagIndex] = useState<RagIndex | null>(null);
+  const [ragIndex, setRagIndex] = useState<RagIndex>();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       action: "resume",
       id: "welcome",
       role: "bot",
-      text: "Hey! I'm SidBot 9000 — Siddharth's digital twin. Ask me about my Applied AI work (like running Dual-LoRA pipelines on an 8GB RTX 4060), Podpitara's 70k-passenger IoT radio, homelab security, or electric guitar & Star Wars.",
+      text: "Hi, I'm SidBot 9000, an AI assistant grounded in Siddharth's work and background via hybrid RAG. Ask me about his projects, career achievements, skills, or personal interests to get started.",
     },
   ]);
   const [input, setInput] = useState("");
   const [mood, setMood] = useState<AvatarMood>("idle");
   const [busy, setBusy] = useState(false);
-  const [showInspector, setShowInspector] = useState(true);
+  const [showInspector, setShowInspector] = useState(false);
   const [lastHits, setLastHits] = useState<RetrievalHit[]>([]);
-  const [lastTelemetry, setLastTelemetry] = useState<string>("Ready");
+  const [lastMode, setLastMode] = useState("offline-bm25+synonyms");
+  const [indexInfo, setIndexInfo] = useState("Loading KB...");
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = useCallback(() => {
+    window.setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 30);
+  }, []);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [setLoading]);
 
   useEffect(() => {
     loadRagIndex()
       .then((idx) => {
         setRagIndex(idx);
-        setLastTelemetry(`${idx.docCount} docs · ${idx.chunkCount} chunks loaded`);
+        setIndexInfo(
+          `${idx.docCount} docs · ${idx.chunkCount} chunks · vec=${idx.hasVectors ? "on" : "off"}`
+        );
       })
       .catch(() => {
-        setLastTelemetry("RAG index missing — run build-sidbot-rag.mjs");
+        setIndexInfo("RAG index missing");
       });
   }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const dispatchOsAction = useCallback(
     (action: string) => {
       if (action === "resume") {
         open("PDF", { url: "/Users/Public/Desktop/Resume.pdf" });
       } else if (action === "github") {
-        window.open("https://github.com/HiSiddharth", "_blank", "noopener,noreferrer");
+        window.open(
+          "https://github.com/HiSiddharth",
+          "_blank",
+          "noopener,noreferrer"
+        );
       } else if (action === "linkedin") {
-        window.open("https://linkedin.com", "_blank", "noopener,noreferrer");
+        window.open(
+          "https://www.linkedin.com/in/hisiddharth/",
+          "_blank",
+          "noopener,noreferrer"
+        );
       }
     },
     [open]
@@ -107,116 +156,115 @@ const { open } = useProcessesActions();
       };
       const botId = `b-${Date.now() + 1}`;
       setMessages((prev) => [...prev, userMsg]);
+      scrollToBottom();
 
-      const idx = ragIndex ?? (await loadRagIndex().catch(() => null));
+      let idx = ragIndex;
+      if (!idx) {
+        try {
+          idx = await loadRagIndex();
+        } catch {
+          // index unavailable
+        }
+      }
+      const queryVec = idx?.hasVectors
+        ? await fetchQueryVector(SIDBOT_WORKER_URL, query)
+        : undefined;
       const retrieval = idx
-        ? retrieveTopChunks(idx, query, 3)
-        : { hits: [], retrievalMs: 0 };
+        ? retrieveTopChunks(idx, query, 3, queryVec)
+        : { hits: [], mode: "offline-bm25+synonyms" as const, retrievalMs: 0 };
 
       setLastHits(retrieval.hits);
+      setLastMode(retrieval.mode);
 
       const contextString = retrieval.hits
         .map((h) => `[${h.chunk.title} | score=${h.score}]\n${h.chunk.text}`)
         .join("\n\n");
 
-      const historyPayload = messages
-        .slice(-6)
-        .map((m) => ({
-          content: m.text,
-          role: m.role === "bot" ? "assistant" : "user",
-        }));
+      const historyPayload = messages.slice(-6).map((m) => ({
+        content: m.text,
+        role: m.role === "bot" ? "assistant" : "user",
+      }));
 
-      const tStart = performance.now();
-
-      try {
-        if (!SIDBOT_WORKER_URL) {
-          throw new Error("worker_unconfigured");
-        }
-
-        const res = await fetch(SIDBOT_WORKER_URL, {
-          body: JSON.stringify({
-            context: contextString,
-            history: historyPayload,
-            query,
-          }),
-          headers: { "Content-Type": "application/json" },
-          method: "POST",
-        });
-
-        if (!res.ok || !res.body) {
-          throw new Error(`worker_http_${res.status}`);
-        }
-
+      if (SIDBOT_WORKER_URL) {
         setMood("speaking");
         setMessages((prev) => [...prev, { id: botId, role: "bot", text: "" }]);
 
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let fullText = "";
-        let ttft = 0;
-
-        let doneReading = false;
-        while (!doneReading) {
-          const { done, value } = await reader.read();
-          doneReading = done;
-          if (value) {
-            const chunk = decoder.decode(value, { stream: true });
-            for (const line of chunk.split("\n")) {
-              if (!line.startsWith("data: ")) continue;
-              const payload = line.slice(6).trim();
-              if (payload === "[DONE]") continue;
-              try {
-                const json = JSON.parse(payload) as {
-                  choices?: { delta?: { content?: string } }[];
-                };
-                const token = json.choices?.[0]?.delta?.content || "";
-                if (token) {
-                  if (!ttft) ttft = Math.round(performance.now() - tStart);
-                  fullText += token;
-                  setMessages((prev) =>
-                    prev.map((m) => (m.id === botId ? { ...m, text: fullText } : m))
-                  );
-                }
-              } catch {
-                // ignore partial SSE JSON frames
-              }
-            }
+        const result = await streamWorkerReply(
+          SIDBOT_WORKER_URL,
+          { context: contextString, history: historyPayload, query },
+          (partialText) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === botId ? { ...m, text: partialText } : m
+              )
+            );
+            scrollToBottom();
           }
+        );
+
+        if (result.blockedMessage) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === botId
+                ? {
+                    ...m,
+                    meta:
+                      result.status === 429
+                        ? "Edge Rate Limit (429)"
+                        : "Safety Guard (400)",
+                    text: result.blockedMessage ?? "",
+                  }
+                : m
+            )
+          );
+          setMood("idle");
+          setBusy(false);
+          scrollToBottom();
+          return;
         }
 
-        const actionMatch = fullText.match(/\[ACTION:([a-z]+)\]\s*$/i);
-        const parsedAction = actionMatch ? actionMatch[1].toLowerCase() : undefined;
-        const cleanText = fullText.replace(/\[ACTION:[a-z]+\]\s*$/i, "").trim();
-
-        const meta = `RAG: ${retrieval.retrievalMs}ms · TTFT: ${ttft || Math.round(performance.now() - tStart)}ms · Cloud LLM`;
-        setLastTelemetry(meta);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === botId ? { ...m, action: parsedAction, meta, text: cleanText } : m
-          )
-        );
-        setMood(parsedAction ? "hyped" : "idle");
-      } catch {
-        // Guaranteed instant fallback when Groq/Worker isn't configured or is down
-        const fallback = buildOfflineFallbackReply(retrieval.hits);
-        const meta = `RAG: ${retrieval.retrievalMs}ms · Local Deterministic Mode`;
-        setLastTelemetry(meta);
-        setMood("speaking");
-        setMessages((prev) => [
-          ...prev,
-          { action: fallback.action, id: botId, meta, role: "bot", text: fallback.text },
-        ]);
-        window.setTimeout(() => setMood("idle"), 900);
-      } finally {
-        setBusy(false);
+        if (result.ok) {
+          const meta = `${retrieval.mode} (${retrieval.retrievalMs}ms) · TTFT ${result.ttft}ms`;
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === botId
+                ? { ...m, action: result.action, meta, text: result.text }
+                : m
+            )
+          );
+          setMood(result.action ? "hyped" : "idle");
+          setBusy(false);
+          scrollToBottom();
+          return;
+        }
       }
+
+      const fallback = buildOfflineFallbackReply(retrieval.hits);
+      const meta = `${retrieval.mode} (${retrieval.retrievalMs}ms) · Offline Fallback`;
+      setMood("speaking");
+      setMessages((prev) => {
+        const hasBot = prev.some((m) => m.id === botId);
+        const nextMsg: ChatMessage = {
+          action: fallback.action,
+          id: botId,
+          meta,
+          role: "bot",
+          text: fallback.text,
+        };
+        return hasBot
+          ? prev.map((m) => (m.id === botId ? nextMsg : m))
+          : [...prev, nextMsg];
+      });
+      window.setTimeout(() => setMood("idle"), 900);
+      setBusy(false);
+      scrollToBottom();
     },
-    [busy, messages, ragIndex]
+    [busy, messages, ragIndex, scrollToBottom]
   );
 
   return (
     <AppContainer {...containerProps} StyledComponent={StyledSidBot}>
-      <header className="sidbot-header">
+      <div className="sidbot-header">
         <div className="sidbot-identity">
           <SidAvatar mood={mood} />
           <div className="sidbot-title">
@@ -229,71 +277,92 @@ const { open } = useProcessesActions();
                 }}
               />
               <span>
-                {SIDBOT_WORKER_URL ? "EDGE LLM + RAG" : "LOCAL RAG MODE"} · {lastTelemetry}
+                {SIDBOT_WORKER_URL ? "Online · Edge RAG" : "Offline RAG"}
               </span>
             </div>
           </div>
         </div>
         <button
           className="inspector-toggle"
+          data-active={showInspector}
           onClick={() => setShowInspector((s) => !s)}
           type="button"
         >
-          {showInspector ? "Hide RAG" : "</> RAG Inspector"}
+          {"</>"} RAG
         </button>
-      </header>
-
-      <div className="quick-prompts">
-        {QUICK_PROMPTS.map((q) => (
-          <button
-            className="chip-btn"
-            key={q}
-            onClick={() => sendMessage(q)}
-            type="button"
-          >
-            {q}
-          </button>
-        ))}
       </div>
 
       <div className="chat-body">
         <div className="messages">
-          {messages.map((m) => (
-            <div className={`msg ${m.role}`} key={m.id}>
-              <div>{m.text}</div>
-              {m.action && (
-                <div>
-                  <button
-                    className="action-btn"
-                    onClick={() => dispatchOsAction(m.action!)}
-                    type="button"
-                  >
-                    ⚡ {ACTION_LABELS[m.action] || `Run: ${m.action}`}
-                  </button>
-                </div>
-              )}
-              {m.meta && <div className="msg-meta">{m.meta}</div>}
+          {messages.map((m) => {
+            const { action } = m;
+            return (
+              <div key={m.id} className={`msg ${m.role}`}>
+                {m.role === "bot" ? (
+                  <MarkdownText text={m.text} />
+                ) : (
+                  <div>{m.text}</div>
+                )}
+                {action && (
+                  <div>
+                    <button
+                      className="action-btn"
+                      onClick={() => dispatchOsAction(action)}
+                      type="button"
+                    >
+                      ⚡ {ACTION_LABELS[action] || `Run: ${action}`}
+                    </button>
+                  </div>
+                )}
+                {showInspector && m.meta && (
+                  <div className="msg-meta">{m.meta}</div>
+                )}
+              </div>
+            );
+          })}
+
+          {messages.length === 1 && (
+            <div className="quick-prompts">
+              {QUICK_PROMPTS.map((q) => (
+                <button
+                  key={q.label}
+                  className="chip-btn"
+                  onClick={() => sendMessage(q.query)}
+                  type="button"
+                >
+                  {q.label}
+                </button>
+              ))}
             </div>
-          ))}
+          )}
+
           <div ref={bottomRef} />
         </div>
 
         {showInspector && (
           <aside className="rag-drawer">
-            <h2>{"</>"} RAG Retrieval</h2>
+            <h2>{"</>"} RAG Telemetry</h2>
+            <div style={{ color: "#94a3b8", marginBottom: "4px" }}>
+              {indexInfo}
+            </div>
+            <div style={{ color: "#64748b", marginBottom: "10px" }}>
+              mode: {lastMode}
+            </div>
             {lastHits.length === 0 ? (
               <div style={{ color: "#64748b" }}>
-                Ask any question to inspect top-K BM25 chunks, scores, and latency.
+                Ask any question to inspect top-K hybrid scores and latency.
               </div>
             ) : (
               lastHits.map((hit) => (
-                <div className="rag-card" key={hit.chunk.id}>
-                  <div className="rag-score">score: {hit.score}</div>
+                <div key={hit.chunk.id} className="rag-card">
+                  <div className="rag-score">
+                    {hit.score} (vec:{hit.vectorScore} · bm25:{hit.bm25Score})
+                  </div>
                   <div style={{ color: "#e2e8f0", margin: "4px 0" }}>
                     {hit.chunk.title}
                   </div>
                   <div style={{ color: "#94a3b8" }}>
-                    {hit.chunk.text.slice(0, 120)}...
+                    {hit.chunk.text.slice(0, 100)}...
                   </div>
                 </div>
               ))
@@ -311,7 +380,7 @@ const { open } = useProcessesActions();
       >
         <input
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about Dual-LoRA, Podpitara, Accenture, guitar..."
+          placeholder="Ask me anything!"
           type="text"
           value={input}
         />
