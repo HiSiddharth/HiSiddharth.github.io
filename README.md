@@ -24,7 +24,11 @@ Instead of a static webpage, SidOS lets you explore my projects, experience, and
 
 ## 🚀 Featured Work (On Desktop)
 
-_(Project shortcuts and interactive showcases are currently being added to the desktop and will be listed here soon.)_
+- **🤖 SidBot 9000 (Hybrid Edge RAG Digital Twin):** Interactive AI assistant embedded in SidOS with a custom animated SVG avatar, pre-compiled 384-dim semantic vectors (`bge-small-en-v1.5`) + BM25 hybrid retrieval, streaming inference via Cloudflare Workers + Groq (`gpt-oss-20b` with multi-tier failover), `gpt-oss-safeguard-20b` + IP rate-limiting guardrails, a live `</> RAG` telemetry inspector, and OS action triggers.
+- **📄 Interactive Resume (`Resume.pdf`):** Sanitized resume directly readable inside SidOS's built-in PDF viewer.
+- **🔗 Direct Profile Shortcuts:** One-click desktop icons for [GitHub](https://github.com/HiSiddharth), [LinkedIn](https://www.linkedin.com/in/hisiddharth/), and [Medium](https://medium.com/@hisiddharth) powered by custom `BaseURL=External` tab routing.
+
+_(More interactive project showcases like SecureImmichServer, AI influencer generation setup with LoRA on local AI pipeline and Podpitara IoT Radio Box are being added soon.)_
 
 ---
 
@@ -90,5 +94,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📄 License & Credits
 
-- **Base Desktop Environment:** Created by [Dustin Brett](https://github.com/DustinBrett) under the [MIT License](https://www.google.com/search?q=./LICENSE).
-- **SidOS Customizations & Portfolio Content:** Maintained by **Siddharth Rai** ([Live Site](https://hisiddharth.github.io/) • [GitHub](https://github.com/HiSiddharth) • [LinkedIn](https://www.linkedin.com/in/hisiddharth/) • [Medium](https://hisiddharth.medium.com/)).
+- **SidOS Customizations & Portfolio Content:** Created and Maintained by **Siddharth Rai** under the [MIT License](./LICENSE).
+- **Socials:** ([Website](https://hisiddharth.github.io/) • [GitHub](https://github.com/HiSiddharth) • [LinkedIn](https://www.linkedin.com/in/hisiddharth/) • [Medium](https://hisiddharth.medium.com/)).
+- **Base Desktop Environment:** Created by [Dustin Brett](https://github.com/DustinBrett).
