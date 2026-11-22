@@ -34,7 +34,8 @@
     "stylelint": "stylelint --formatter=verbose **/*.ts*",
     "test": "jest",
     "unused-scan": "knip",
-    "update": "yarn upgrade-interactive --latest"
+    "update": "yarn upgrade-interactive --latest",
+    "rag:update": "bash scripts/update-rag.sh"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",

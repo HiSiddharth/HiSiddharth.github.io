@@ -250,6 +250,16 @@ const directory: Processes = {
     singleton: true,
     title: "Screen Saver",
   },
+  SidBot: {
+    backgroundColor: "#0b101b",
+    Component: dynamic(() => import("components/apps/SidBot")),
+    defaultSize: {
+      height: 540,
+      width: 780,
+    },
+    icon: "/System/Icons/sidbot.svg",
+    title: "SidBot 9000",
+  },
   SpaceCadet: {
     backgroundColor: "#000",
     Component: dynamic(() => import("components/apps/SpaceCadet")),
