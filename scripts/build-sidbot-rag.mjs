@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SRC_DIR = path.resolve("rag-sources");
+const SRC_DIR = path.resolve("components/apps/SidBot/rag-sources");
 const OUT_FILE = path.resolve("public/sidbot/rag-index.json");
 const STOPWORDS = new Set([
   "the",

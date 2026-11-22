@@ -25,6 +25,6 @@ Trained a custom character identity LoRA (using Fizgig workflows on Kaggle) and 
 
 ## Hardware Automation & Reverse Engineering
 
-- **Smart Refrigerator Thermostat:** Engineered an ESP32-based controller using dual temperature sensors, Wi-Fi smart-plug integration, auto-defrost logic, and Telegram alerts to regulate appliance cooling cycles.
-- **APK Telemetry Stripping:** Regularly decompile, patch, and re-sign personal Android APKs (`apktool` / `apksigner`) to strip `INTERNET` permissions and block unwanted background telemetry.
+- **Smart Refrigerator Thermostat:** Engineered an ESP32-based controller using dual temperature sensors, Wi-Fi smart-plug integration and auto-defrost logic.
+- **APK Telemetry Stripping:** Regularly decompile and patch Android APKs (`apktool` / `apksigner`) to strip telementry, ads and remove `INTERNET` permissions.
 - **Podpitara Transit Audio (Internship):** Developed ESP32 audio streaming firmware for transit radio boxes reaching 70,000+ daily commuters, collaborating on hardware revisions that cut BOM production costs by 45%.

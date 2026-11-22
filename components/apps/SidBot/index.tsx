@@ -17,6 +17,9 @@ import AppContainer, {
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import { useProcessesActions } from "contexts/process";
 
+const FOLLOWUP_RE =
+  /\b(?:it|its|that|this|those|these|they|them|more|details?|explain|elaborate|else|why)\b/i;
+
 const SIDBOT_WORKER_URL =
   process.env.NEXT_PUBLIC_SIDBOT_URL ||
   "https://sidbot9000-proxy.hisiddharth.workers.dev";
@@ -166,11 +169,17 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
           // index unavailable
         }
       }
+      const prevUserText = messages.findLast((m) => m.role === "user")?.text;
+      const isFollowUp =
+        Boolean(prevUserText) &&
+        (query.split(/\s+/).length <= 6 || FOLLOWUP_RE.test(query));
+      const retrievalQuery = isFollowUp ? `${prevUserText} ${query}` : query;
+
       const queryVec = idx?.hasVectors
-        ? await fetchQueryVector(SIDBOT_WORKER_URL, query)
+        ? await fetchQueryVector(SIDBOT_WORKER_URL, retrievalQuery)
         : undefined;
       const retrieval = idx
-        ? retrieveTopChunks(idx, query, 3, queryVec)
+        ? retrieveTopChunks(idx, retrievalQuery, 4, queryVec)
         : { hits: [], mode: "offline-bm25+synonyms" as const, retrievalMs: 0 };
 
       setLastHits(retrieval.hits);
@@ -180,10 +189,13 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
         .map((h) => `[${h.chunk.title} | score=${h.score}]\n${h.chunk.text}`)
         .join("\n\n");
 
-      const historyPayload = messages.slice(-6).map((m) => ({
-        content: m.text,
-        role: m.role === "bot" ? "assistant" : "user",
-      }));
+      const historyPayload = messages
+        .filter((m) => m.id !== "welcome")
+        .slice(-8)
+        .map((m) => ({
+          content: m.text,
+          role: m.role === "bot" ? "assistant" : "user",
+        }));
 
       if (SIDBOT_WORKER_URL) {
         setMood("speaking");

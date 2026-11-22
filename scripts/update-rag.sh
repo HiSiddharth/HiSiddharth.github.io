@@ -3,9 +3,9 @@ set -euo pipefail
 
 WORKER_URL="https://sidbot9000-proxy.hisiddharth.workers.dev"
 
-echo "🔍 Checking rag-sources/ for accidental secrets or phone numbers..."
-if grep -rnE "(gsk_[A-Za-z0-9]{15,}|ghp_[A-Za-z0-9]{15,}|\+91[- ]?[6-9][0-9]{9}|\b[6-9][0-9]{9}\b)" rag-sources/; then
-  echo "❌ Aborted: potential API key or phone number found in rag-sources/ above."
+echo "🔍 Checking components/apps/SidBot/rag-sources/ for accidental secrets or phone numbers..."
+if grep -rnE "(gsk_[A-Za-z0-9]{15,}|ghp_[A-Za-z0-9]{15,}|\+91[- ]?[6-9][0-9]{9}|\b[6-9][0-9]{9}\b)" components/apps/SidBot/rag-sources/; then
+  echo "❌ Aborted: potential API key or phone number found in components/apps/SidBot/rag-sources/ above."
   exit 1
 fi
 
@@ -27,4 +27,4 @@ if [[ "${1:-}" == "--deploy-worker" ]]; then
   (cd ../sidbot-worker && npx wrangler deploy)
 fi
 
-echo "🎉 Done! Review changes and commit/push public/sidbot/rag-index.json (and rag-sources/) when ready."
+echo "🎉 Done! Review changes and commit/push public/sidbot/rag-index.json (and components/apps/SidBot/rag-sources/) when ready."
