@@ -17,6 +17,9 @@ import AppContainer, {
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import { useProcessesActions } from "contexts/process";
 
+const RAG_INDEX: RagIndex = loadRagIndex();
+const INDEX_INFO = `${RAG_INDEX.docCount} docs · ${RAG_INDEX.chunkCount} chunks · vec=${RAG_INDEX.hasVectors ? "on" : "off"}`;
+
 const FOLLOWUP_RE =
   /\b(?:it|its|that|this|those|these|they|them|more|details?|explain|elaborate|else|why)\b/i;
 
@@ -79,8 +82,6 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
   const containerProps = useAppContainer(id);
   const { setLoading } = containerProps;
   const { open } = useProcessesActions();
-
-  const [ragIndex, setRagIndex] = useState<RagIndex>();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       action: "resume",
@@ -95,7 +96,6 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
   const [showInspector, setShowInspector] = useState(false);
   const [lastHits, setLastHits] = useState<RetrievalHit[]>([]);
   const [lastMode, setLastMode] = useState("offline-bm25+synonyms");
-  const [indexInfo, setIndexInfo] = useState("Loading KB...");
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -108,19 +108,6 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
   useEffect(() => {
     setLoading(false);
   }, [setLoading]);
-
-  useEffect(() => {
-    loadRagIndex()
-      .then((idx) => {
-        setRagIndex(idx);
-        setIndexInfo(
-          `${idx.docCount} docs · ${idx.chunkCount} chunks · vec=${idx.hasVectors ? "on" : "off"}`
-        );
-      })
-      .catch(() => {
-        setIndexInfo("RAG index missing");
-      });
-  }, []);
 
   const dispatchOsAction = useCallback(
     (action: string) => {
@@ -161,26 +148,28 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
       setMessages((prev) => [...prev, userMsg]);
       scrollToBottom();
 
-      let idx = ragIndex;
-      if (!idx) {
-        try {
-          idx = await loadRagIndex();
-        } catch {
-          // index unavailable
+      let prevUserText: string | undefined;
+      for (let i = messages.length - 1; i >= 0; i -= 1) {
+        const candidate = messages[i];
+        if (candidate.role === "user") {
+          prevUserText = candidate.text;
+          break;
         }
       }
-      const prevUserText = messages.findLast((m) => m.role === "user")?.text;
       const isFollowUp =
         Boolean(prevUserText) &&
         (query.split(/\s+/).length <= 6 || FOLLOWUP_RE.test(query));
       const retrievalQuery = isFollowUp ? `${prevUserText} ${query}` : query;
 
-      const queryVec = idx?.hasVectors
+      const queryVec = RAG_INDEX.hasVectors
         ? await fetchQueryVector(SIDBOT_WORKER_URL, retrievalQuery)
         : undefined;
-      const retrieval = idx
-        ? retrieveTopChunks(idx, retrievalQuery, 4, queryVec)
-        : { hits: [], mode: "offline-bm25+synonyms" as const, retrievalMs: 0 };
+      const retrieval = retrieveTopChunks(
+        RAG_INDEX,
+        retrievalQuery,
+        4,
+        queryVec
+      );
 
       setLastHits(retrieval.hits);
       setLastMode(retrieval.mode);
@@ -271,7 +260,7 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
       setBusy(false);
       scrollToBottom();
     },
-    [busy, messages, ragIndex, scrollToBottom]
+    [busy, messages, scrollToBottom]
   );
 
   return (
@@ -355,7 +344,7 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
           <aside className="rag-drawer">
             <h2>{"</>"} RAG Telemetry</h2>
             <div style={{ color: "#94a3b8", marginBottom: "4px" }}>
-              {indexInfo}
+              {INDEX_INFO}
             </div>
             <div style={{ color: "#64748b", marginBottom: "10px" }}>
               mode: {lastMode}

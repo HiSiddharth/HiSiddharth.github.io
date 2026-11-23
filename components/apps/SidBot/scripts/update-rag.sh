@@ -10,11 +10,11 @@ if grep -rnE "(gsk_[A-Za-z0-9]{15,}|ghp_[A-Za-z0-9]{15,}|\+91[- ]?[6-9][0-9]{9}|
 fi
 
 echo "🧠 Compiling RAG index + 384-dim semantic vectors..."
-node scripts/build-sidbot-rag.mjs --embed="${WORKER_URL}/embed"
+node components/apps/SidBot/scripts/build-sidbot-rag.mjs --embed="${WORKER_URL}/embed"
 
 node -e '
 const fs = require("fs");
-const idx = JSON.parse(fs.readFileSync("public/sidbot/rag-index.json", "utf8"));
+const idx = JSON.parse(fs.readFileSync("components/apps/SidBot/rag-index.json", "utf8"));
 if (!idx.hasVectors || !idx.chunkCount) {
   console.error("❌ Invalid rag-index.json");
   process.exit(1);
@@ -27,4 +27,4 @@ if [[ "${1:-}" == "--deploy-worker" ]]; then
   (cd ../sidbot-worker && npx wrangler deploy)
 fi
 
-echo "🎉 Done! Review changes and commit/push public/sidbot/rag-index.json (and components/apps/SidBot/rag-sources/) when ready."
+echo "🎉 Done! Review changes and commit/push components/apps/SidBot/rag-index.json (and components/apps/SidBot/rag-sources/) when ready."

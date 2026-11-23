@@ -41,13 +41,6 @@ import {
   TEXT_EDITORS,
   VIDEO_FILE_EXTENSIONS,
 } from "utils/constants";
-import { type transcode } from "utils/ffmpeg";
-import {
-  AUDIO_DECODE_FORMATS,
-  AUDIO_ENCODE_FORMATS,
-  VIDEO_DECODE_FORMATS,
-  VIDEO_ENCODE_FORMATS,
-} from "utils/ffmpeg/formats";
 import {
   getExtension,
   isYouTubeUrl,
@@ -62,12 +55,8 @@ import type * as SheetJs from "utils/sheetjs";
 
 const { alias } = PACKAGE_DATA;
 
-const loadTranscodeFunction = async (
-  isAudioVideo: boolean
-): Promise<typeof convert | typeof transcode> =>
-  isAudioVideo
-    ? (await import("utils/ffmpeg")).transcode
-    : (await import("utils/imagemagick")).convert;
+const loadTranscodeFunction = async (): Promise<typeof convert> =>
+  (await import("utils/imagemagick")).convert;
 
 const loadSheetJs = (): Promise<typeof SheetJs> => import("utils/sheetjs");
 
@@ -261,17 +250,10 @@ const useFileContextMenu = (
         } else {
           menuItems.unshift(MENU_SEPERATOR);
 
-          const canDecodeAudio = AUDIO_DECODE_FORMATS.has(pathExtension);
           const canDecodeImage = IMAGE_DECODE_FORMATS.has(pathExtension);
-          const canDecodeVideo = VIDEO_DECODE_FORMATS.has(pathExtension);
 
-          if (canDecodeAudio || canDecodeImage || canDecodeVideo) {
-            const isAudioVideo = canDecodeAudio || canDecodeVideo;
-            const ENCODE_FORMATS = isAudioVideo
-              ? canDecodeAudio
-                ? AUDIO_ENCODE_FORMATS
-                : VIDEO_ENCODE_FORMATS
-              : IMAGE_ENCODE_FORMATS;
+          if (canDecodeImage) {
+            const ENCODE_FORMATS = IMAGE_ENCODE_FORMATS;
 
             menuItems.unshift(MENU_SEPERATOR, {
               label: "Convert to",
@@ -289,8 +271,7 @@ const useFileContextMenu = (
                       close(`Transfer${PROCESS_DELIMITER}${path}`);
 
                     try {
-                      const transcodeFunction =
-                        await loadTranscodeFunction(isAudioVideo);
+                      const transcodeFunction = await loadTranscodeFunction();
                       const objectReaders = absoluteEntries().map<ObjectReader>(
                         (absoluteEntry) => {
                           let aborted = false;

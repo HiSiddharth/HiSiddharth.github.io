@@ -1,3 +1,5 @@
+import ragIndexData from "components/apps/SidBot/rag-index.json";
+
 export interface RagChunk {
   action: string;
   aliases: string[];
@@ -5,7 +7,7 @@ export interface RagChunk {
   id: string;
   len: number;
   text: string;
-  tf: Record<string, number>;
+  tf: Partial<Record<string, number>>;
   title: string;
   vec?: number[];
 }
@@ -17,7 +19,7 @@ export interface RagIndex {
   chunks: RagChunk[];
   docCount: number;
   hasVectors?: boolean;
-  idf: Record<string, number>;
+  idf: Partial<Record<string, number>>;
   version: number;
 }
 
@@ -104,8 +106,6 @@ const SYNONYMS: Record<string, string[]> = {
   vpn: ["wireguard", "immich"],
 };
 
-let cachedIndex: RagIndex | undefined;
-
 export const tokenize = (text: string): string[] => {
   const base = text
     .toLowerCase()
@@ -135,13 +135,7 @@ const cosine = (a: number[], b: number[]): number => {
   return dot / (Math.sqrt(na) * Math.sqrt(nb));
 };
 
-export const loadRagIndex = async (): Promise<RagIndex> => {
-  if (cachedIndex) return cachedIndex;
-  const res = await fetch("/sidbot/rag-index.json");
-  if (!res.ok) throw new Error(`Failed to load RAG index (${res.status})`);
-  cachedIndex = (await res.json()) as RagIndex;
-  return cachedIndex;
-};
+export const loadRagIndex = (): RagIndex => ragIndexData;
 
 export const retrieveTopChunks = (
   index: RagIndex,

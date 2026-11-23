@@ -4,7 +4,7 @@
   "description": "SidOS - Applied AI Engineer, Automation Builder & Creative Technologist",
   "author": {
     "name": "Sid",
-    "url": "https://hisiddharth.github.io/SidOS"
+    "url": "https://hisiddharth.github.io"
   },
   "license": "MIT",
   "browserslist": [
@@ -35,7 +35,7 @@
     "test": "jest",
     "unused-scan": "knip",
     "update": "yarn upgrade-interactive --latest",
-    "rag:update": "bash scripts/update-rag.sh"
+    "rag:update": "bash components/apps/SidBot/scripts/update-rag.sh"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
