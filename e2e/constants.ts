@@ -257,14 +257,13 @@ export const START_BUTTON_MENU_ITEMS = [
 export const START_MENU_APPS = [
   /^Browser$/,
   /^DevTools$/,
+  /^Fly$/,
   /^IRC$/,
   /^Marked$/,
-  /^Messenger$/,
   /^Monaco Editor$/,
   /^Paint$/,
   /^PDF$/,
   /^Photo Viewer$/,
-  /^Stable Diffusion$/,
   /^Terminal$/,
   /^TinyMCE$/,
   /^Video Player$/,
@@ -273,14 +272,8 @@ export const START_MENU_APPS = [
 ];
 
 export const START_MENU_FOLDERS = {
-  Emulators: [
-    /^BoxedWine$/,
-    /^EmulatorJS$/,
-    /^js-dos$/,
-    /^Ruffle$/,
-    /^Virtual x86$/,
-  ],
-  Games: [/^ClassiCube$/, /^DX-Ball$/, /^Quake III Arena$/, /^Space Cadet$/],
+  Emulators: [/^EmulatorJS$/, /^js-dos$/, /^Ruffle$/, /^TIC-80$/],
+  Games: [/^Chess$/, /^Chrome Dino$/, /^ClassiCube$/, /^Space Cadet$/],
 };
 
 export const TEST_APP_CONTAINER_APP = "Marked";
@@ -320,7 +313,7 @@ export const RICH_TEXT_FILE_LABEL_TEXT = "Note.whtml";
 
 export const CLOCK_REGEX = /^(1[0-2]|0?[1-9])(?::[0-5]\d){2}\s?(AM|PM)$/;
 
-export const BASE_APP_TITLE = "daedalOS";
+export const BASE_APP_TITLE = "SidOS";
 export const BASE_APP_FAVICON = /^\/favicon.ico$/;
 
 export const UNKNOWN_ICON_PATH = "/System/Icons/48x48/unknown.webp";

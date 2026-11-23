@@ -62,7 +62,6 @@ import {
   TYPE_DELAY,
   UNKNOWN_ICON_PATH,
   WEBGL_OFFSCREEN_NOT_SUPPORTED_BROWSERS,
-  WEBGPU_HEADLESS_NOT_SUPPORTED_BROWSERS,
   WINDOW_SELECTOR,
   WINDOW_TITLEBAR_ICON_SELECTOR,
   WINDOW_TITLEBAR_SELECTOR,
@@ -533,8 +532,7 @@ export const getHostname = async ({ page }: TestProps): Promise<string> =>
 
 // Mirrors getAvailability in hooks/useWindowAI
 // Mirrors when the taskbar menu offers the Talos button
-export const offersTalos = ({ browserName }: TestPropsWithBrowser): boolean =>
-  !WEBGPU_HEADLESS_NOT_SUPPORTED_BROWSERS.has(browserName) && !process.env.CI;
+export const offersTalos = (): boolean => false;
 
 export const windowAnimationIsFinished = async ({
   page,
@@ -1088,7 +1086,9 @@ export const backgroundCanvasMaybeIsVisible = async ({
 }: TestProps): Promise<void> => {
   if (!headless || !browserName) {
     await expect(async () =>
-      expect(page.locator(BACKGROUND_CANVAS_SELECTOR)).toBeVisible()
+      expect(
+        page.locator(`${DESKTOP_SELECTOR}>canvas, ${DESKTOP_SELECTOR}>video`)
+      ).toBeVisible()
     ).toPass();
   }
 };
