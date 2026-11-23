@@ -1,6 +1,16 @@
 # Credits
 
-This project is greatly augmented by code from the open source community. Thank you to all the developers who have contributed to these projects!
+SidOS is built on top of [daedalOS](https://github.com/DustinBrett/daedalOS) by **Dustin Brett** and is powered by open-source projects and edge AI infrastructure. Thank you to all the developers who contributed to these projects!
+
+## Base Desktop Engine
+
+- [daedalOS](https://github.com/DustinBrett/daedalOS) by Dustin Brett (MIT License)
+
+## SidBot 9000 (Edge & AI Stack)
+
+- [Cloudflare Workers](https://workers.cloudflare.com/) (edge proxy & native IP rate limiting)
+- [Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/) (`@cf/baai/bge-small-en-v1.5` embeddings & `@cf/meta/llama-4-scout-17b-16e-instruct` fallback)
+- [Groq](https://groq.com/) (`openai/gpt-oss-20b`, `qwen/qwen3.8-27b`, & `openai/gpt-oss-safeguard-20b` moderation)
 
 ## Frameworks
 
@@ -12,14 +22,14 @@ This project is greatly augmented by code from the open source community. Thank 
 ## Core Libraries
 
 - [BrowserFS](https://github.com/jvilk/BrowserFS)
-- [Framer Motion](https://github.com/framer/motion)
+- [Motion](https://github.com/motiondivision/motion)
 - [react-rnd](https://github.com/bokuweb/react-rnd)
 
 ## Tools
 
 - [Jest](https://github.com/facebook/jest)
 - [Playwright](https://github.com/microsoft/playwright)
-- [ESLint](https://github.com/eslint/eslint)
+- [Oxlint](https://github.com/oxc-project/oxc)
 - [Stylelint](https://github.com/stylelint/stylelint)
 - [Prettier](https://github.com/prettier/prettier)
 - [Husky](https://github.com/typicode/husky)
@@ -36,7 +46,6 @@ This project is greatly augmented by code from the open source community. Thank 
 - [decode-ico](https://github.com/LinusU/decode-ico)
 - [exif-js](https://github.com/exif-js/exif-js)
 - [fflate](https://github.com/101arrowz/fflate)
-- [FFmpeg](https://github.com/ffmpegwasm/ffmpeg.wasm)
 - [file-type](https://github.com/sindresorhus/file-type)
 - [fix-webm-duration](https://github.com/yusitnikov/fix-webm-duration)
 - [gif.js](https://github.com/jnordberg/gif.js)
@@ -65,16 +74,12 @@ This project is greatly augmented by code from the open source community. Thank 
 - [UTIF.js](https://github.com/photopea/UTIF.js)
 - [Vanta.js](https://github.com/tengbao/vanta)
 - [Wasmer](https://github.com/wasmerio/wasmer)
-- [Web Stable Diffusion](https://github.com/mlc-ai/web-stable-diffusion)
-- [WebLLM](https://github.com/mlc-ai/web-llm)
 
 ## App Libraries
 
-- [Boxedwine](https://github.com/danoon2/Boxedwine)
 - [chess.js](https://github.com/jhlywa/chess.js)
 - [chessboard2](https://chessboardjs.com/v2/)
 - [ClassiCube](https://github.com/UnknownShadow200/ClassiCube)
-- [DX-Ball](https://habr.com/en/post/147339/)
 - [emulatorjs](https://github.com/ethanaobrien/emulatorjs)
 - [Eruda](https://github.com/liriliri/eruda)
 - [js-dos](https://github.com/caiiiycuk/js-dos)
@@ -83,12 +88,10 @@ This project is greatly augmented by code from the open source community. Thank 
 - [Marked](https://github.com/markedjs/marked)
   - [DOMPurify](https://github.com/cure53/DOMPurify)
 - [Monaco Editor](https://github.com/microsoft/monaco-editor)
-- [nostr-tools](https://github.com/nbd-wtf/nostr-tools)
 - [opentype.js](https://github.com/opentypejs/opentype.js)
 - [PDF.js](https://github.com/mozilla/pdf.js)
 - [Print.js](https://github.com/crabbly/print.js)
 - [Pyodide](https://github.com/pyodide/pyodide)
-- [Quake 3](https://github.com/lrusso/Quake3)
 - [quickjs-emscripten](https://github.com/justjake/quickjs-emscripten)
 - [Ruffle](https://github.com/ruffle-rs/ruffle)
 - [Space Cadet Pinball](https://github.com/alula/SpaceCadetPinball)
@@ -98,7 +101,6 @@ This project is greatly augmented by code from the open source community. Thank 
 - [TinyMCE](https://github.com/tinymce/tinymce)
 - [Video.js](https://github.com/videojs/video.js)
 - [Vim.js](https://github.com/coolwanglu/vim.js)
-- [Virtual x86](https://github.com/copy/v86)
 - [Web eSheep](https://github.com/Adrianotiger/web-esheep)
 - [Webamp](https://github.com/captbaritone/webamp)
   - [Butterchurn](https://github.com/jberg/butterchurn)

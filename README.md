@@ -34,10 +34,11 @@ _(More interactive project showcases like SecureImmichServer, AI influencer gene
 
 ## 🛠️ Customizations Made for SidOS
 
-- **Engineered External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external project demos in native browser tabs.
+- **Engineered External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external profile/project links in native browser tabs.
 - **Hardware-Decoded Live Wallpapers:** Transcoded and optimized 4K cinematic Star Wars video loops via FFmpeg (`-crf 26`, `-an` stripped audio, `-movflags +faststart` web-streaming headers), cutting file sizes by up to 90% for instant, bufferless playback.
-- **Purged Heavy Bloat:** Excised dead-weight WebGPU models and legacy emulators (BoxedWine, V86, DX-Ball, client-side Stable Diffusion), significantly reducing bundle size, initial load time, and build overhead.
-- **GLSL Shader Window Effects:** Enabled randomized window-closing animations inspired by _Burn-My-Windows_ (fire, glitch, and matrix fade shaders).
+- **Purged Heavy Bloat (~100+ MB Stripped):** Excised dead-weight WebGPU models, legacy emulators, and heavy assets (`BoxedWine`, `V86` + `linux.bin`, `DX-Ball`, `Quake3`, `Nostr Messenger`, client-side Stable Diffusion, and `ffmpeg.wasm` while preserving lightweight ImageMagick image conversion), cleaning orphaned icons, Terminal/context-menu hooks, and Search indexes.
+- **WebGL Shaders & Window Stability Fixes:** Enabled randomized window-closing shaders inspired by _Burn-My-Windows_ (patching GLSL `#extension` preprocessor hoisting for NVIDIA/Linux WebGL drivers) and added defensive `stackOrder` guards in `useNextFocusableId` to prevent taskbar-peek crashes.
+- **Desktop Connectome Sim & Static SEO Tuning:** Expanded the `DesktopFly` fruit-fly simulation cap to 30 concurrent flies.
 
 ---
 
