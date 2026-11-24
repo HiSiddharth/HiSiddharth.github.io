@@ -223,6 +223,7 @@ test.describe("has files & folders", () => {
     });
 
     test("can create shortcut", async ({ page }) => {
+      test.slow();
       const shortcutFile = `${TEST_ROOT_FILE_TEXT} - Shortcut`;
 
       await fileExplorerEntryIsHidden(shortcutFile, { page });

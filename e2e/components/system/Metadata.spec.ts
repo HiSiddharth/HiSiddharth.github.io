@@ -9,7 +9,9 @@ test.afterEach(closePage);
 
 test.describe("has correct tags", () => {
   test("has link preloads", async ({ page }) => {
-    const preloadElements = page.locator("link[rel=preload]");
+    const preloadElements = page.locator(
+      "link[rel=preload][fetchpriority=high]"
+    );
 
     await expect(preloadElements).toHaveCount(desktopIcons.length);
 

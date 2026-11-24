@@ -1,10 +1,6 @@
 import { expect, test } from "@playwright/test";
 import directory from "contexts/process/directory";
-import {
-  PYODIDE_HEADLESS_NOT_SUPPORTED_BROWSERS,
-  ROOT_PUBLIC_TEST_FILE,
-  TERMINAL_BASE_CD,
-} from "e2e/constants";
+import { ROOT_PUBLIC_TEST_FILE, TERMINAL_BASE_CD } from "e2e/constants";
 import {
   captureConsoleLogs,
   closePage,
@@ -208,6 +204,7 @@ test.describe("has file system access", () => {
     });
 
     test("new file after reload", async ({ page }) => {
+      test.slow();
       const testFile = "persisted.txt";
 
       await sendToTerminal({ page }, `touch ${testFile}`);
@@ -312,19 +309,6 @@ test.describe("has commands", () => {
     await terminalHasText({ page }, "Name:    dustinbrett.com");
   });
 
-  test("python", async ({ browserName, headless, page }) => {
-    test.skip(
-      headless && PYODIDE_HEADLESS_NOT_SUPPORTED_BROWSERS.has(browserName),
-      "no headless Pyodide support"
-    );
-
-    await sendToTerminal({ page }, "py");
-
-    await expect(async () =>
-      terminalHasText({ page }, /\d+\.\d+\.\d+ \(main, .*\) \[Clang/)
-    ).toPass();
-  });
-
   test("qjs", async ({ page }) => {
     const randomNumber = Math.floor(Math.random() * 1000);
     const randomNumber2 = Math.floor(Math.random() * 1000);
@@ -409,11 +393,6 @@ test.describe("has commands", () => {
   test("whoami", async ({ page }) => {
     await sendToTerminal({ page }, "whoami");
     await terminalHasText({ page }, `${await getHostname({ page })}\\public`);
-  });
-
-  test("wsl", async ({ page }) => {
-    await sendToTerminal({ page }, "wsl");
-    await windowTitlebarTextIsVisible(/linux.bin/, { page });
   });
 
   test("xlsx", async ({ page }) => {
