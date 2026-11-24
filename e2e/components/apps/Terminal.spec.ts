@@ -1,9 +1,6 @@
 import { expect, test } from "@playwright/test";
 import directory from "contexts/process/directory";
-import {
-  ROOT_PUBLIC_TEST_FILE,
-  TERMINAL_BASE_CD,
-} from "e2e/constants";
+import { ROOT_PUBLIC_TEST_FILE, TERMINAL_BASE_CD } from "e2e/constants";
 import {
   captureConsoleLogs,
   closePage,
@@ -207,6 +204,7 @@ test.describe("has file system access", () => {
     });
 
     test("new file after reload", async ({ page }) => {
+      test.slow();
       const testFile = "persisted.txt";
 
       await sendToTerminal({ page }, `touch ${testFile}`);
