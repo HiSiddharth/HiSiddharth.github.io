@@ -1,7 +1,6 @@
 import { test } from "@playwright/test";
 import {
   CLOCK_MENU_ITEMS,
-  SHOW_TALOS_MENU_ITEM,
   START_BUTTON_MENU_ITEMS,
   TASKBAR_ENTRIES_MENU_ITEMS,
   TASKBAR_ENTRY_MENU_ITEMS,
@@ -30,11 +29,8 @@ import {
   hoverOnTaskbarEntry,
   loadApp,
   loadTestApp,
-  offersTalos,
   sheepIsVisible,
   startButtonIsVisible,
-  talosButtonIsHidden,
-  talosButtonIsVisible,
   taskbarEntriesAreVisible,
   taskbarEntryHasIcon,
   taskbarEntryHasTooltip,
@@ -191,26 +187,15 @@ test.describe("entries", () => {
       await contextMenuIsVisible({ page });
     });
 
-    test("has items", async ({ browserName, page }) => {
-      const entries = TASKBAR_ENTRIES_MENU_ITEMS(
-        offersTalos({ browserName, page })
-      );
+    test("has items", async ({ page }) => {
+      const menuItems = TASKBAR_ENTRIES_MENU_ITEMS(false);
 
-      await contextMenuHasCount(entries.length, { page });
+      await contextMenuHasCount(menuItems.length, { page });
 
-      for (const label of entries) {
+      for (const label of menuItems) {
         // eslint-disable-next-line no-await-in-loop
         await contextMenuEntryIsVisible(label, { page });
       }
-    });
-
-    test("has Talos button off until shown", async ({ browserName, page }) => {
-      test.skip(!offersTalos({ browserName, page }), "no AI support");
-
-      await talosButtonIsHidden({ page });
-      // Fails if it was on, as the menu entry toggles it
-      await clickContextMenuEntry(SHOW_TALOS_MENU_ITEM, { page });
-      await talosButtonIsVisible({ page });
     });
   });
 });
