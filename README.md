@@ -1,46 +1,39 @@
-# ⚡ SidOS: Interactive Portfolio & Web Desktop
+# ⚡ SidOS: An Operating System inside your Browser!
 
-> **A browser-based operating system serving as my interactive personal portfolio.**
+> **A browser-based operating system serving as my personal portfolio.**
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Launch_SidOS-orange)](https://hisiddharth.github.io/)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/HiSiddharth/HiSiddharth.github.io)
 [![Built with Next.js](https://img.shields.io/badge/Framework-Next.js-yellow)](https://nextjs.org/)
-[![Base Engine-daedalOS](https://img.shields.io/badge/Base%20Engine-daedalOS-blue)](https://github.com/DustinBrett/daedalOS)
+[![Base Engine: daedalOS](https://img.shields.io/badge/Base%20Engine-daedalOS-blue)](https://github.com/DustinBrett/daedalOS)
 
-![SidOS Desktop Preview](./public/screenshot.png)
-
----
+[![SidOS Desktop Preview](./public/screenshot.png)](https://hisiddharth.github.io/)
 
 ## 💡 About This Project
 
 **[Launch SidOS Live](https://hisiddharth.github.io/)**
 
-Instead of a static webpage, SidOS lets you explore my projects, experience, and work as if you were browsing my personal desktop environment directly in your browser.
+SidOS is a web desktop that lets you explore my projects, work experience and my other work as if you were browsing my personal desktop environment directly in your browser.
 
 > **Attribution Note:**  
-> The core web desktop engine is forked from the open-source [daedalOS](https://github.com/DustinBrett/daedalOS) project by **Dustin Brett**. I stripped down and customized the engine—removing heavy client-side emulators and WebGPU bloat while adding custom external routing, optimized live video wallpapers, and shader effects to repurpose it as a fast, lightweight portfolio.
-
----
+> The core web desktop engine is forked from the open-source [daedalOS](https://github.com/DustinBrett/daedalOS) project by **Dustin Brett**. I stripped it down and customized the engine by removing heavy client-side emulators and WebGPU bloat and added my own features and functionalities to it.
 
 ## 🚀 Featured Work (On Desktop)
 
-- **🤖 SidBot 9000 (Hybrid Edge RAG Digital Twin):** Interactive AI assistant embedded in SidOS with a custom animated SVG avatar, pre-compiled 384-dim semantic vectors (`bge-small-en-v1.5`) + BM25 hybrid retrieval, streaming inference via Cloudflare Workers + Groq (`gpt-oss-20b` with multi-tier failover), `gpt-oss-safeguard-20b` + IP rate-limiting guardrails, a live `</> RAG` telemetry inspector, and OS action triggers.
-- **📄 Interactive Resume (`Resume.pdf`):** Sanitized resume directly readable inside SidOS's built-in PDF viewer.
-- **🔗 Direct Profile Shortcuts:** One-click desktop icons for [GitHub](https://github.com/HiSiddharth), [LinkedIn](https://www.linkedin.com/in/hisiddharth/), and [Medium](https://medium.com/@hisiddharth) powered by custom `BaseURL=External` tab routing.
+- **🤖 SidBot 9000 (Hybrid Edge RAG Assistant):** An interactive AI assistant embedded directly into the OS with an animated avatar and OS action triggers.
+  - **Hybrid Retrieval:** Combines pre-compiled 384-dim semantic vectors (`bge-small-en-v1.5`) with BM25 lexical search.
+  - **Edge Inference:** Streams responses via Cloudflare Workers and Groq (`gpt-oss-20b`) with multi-tier model failover.
+  - **Guardrails & Telemetry:** Protected by `gpt-oss-safeguard-20b` and IP rate-limiting, featuring a live `</> RAG` inspector to view retrieval scores in real time.
+- **📄 My Resume (`Resume.pdf`):** A PDF document containing my resume. You can directly open it in SidOS's built-in PDF viewer as well as directly download it on your device.
+- **🔗 Direct Profile Shortcuts:** Single-click desktop icons for my [GitHub](https://github.com/HiSiddharth), [LinkedIn](https://www.linkedin.com/in/hisiddharth/), and [Medium](https://medium.com/@hisiddharth) profiles using custom `BaseURL=External` tab routing.
 
 _(More interactive project showcases like SecureImmichServer, AI influencer generation setup with LoRA on local AI pipeline and Podpitara IoT Radio Box are being added soon.)_
 
----
-
 ## 🛠️ Customizations Made for SidOS
 
-- **Engineered External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external profile/project links in native browser tabs.
+- **Added External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external profile/project links in native browser tabs.
 - **Hardware-Decoded Live Wallpapers:** Transcoded and optimized 4K cinematic Star Wars video loops via FFmpeg (`-crf 26`, `-an` stripped audio, `-movflags +faststart` web-streaming headers), cutting file sizes by up to 90% for instant, bufferless playback.
-- **Purged Heavy Bloat (~100+ MB Stripped):** Excised dead-weight WebGPU models, legacy emulators, and heavy assets (`BoxedWine`, `V86` + `linux.bin`, `DX-Ball`, `Quake3`, `Nostr Messenger`, client-side Stable Diffusion, and `ffmpeg.wasm` while preserving lightweight ImageMagick image conversion), cleaning orphaned icons, Terminal/context-menu hooks, and Search indexes.
-- **WebGL Shaders & Window Stability Fixes:** Enabled randomized window-closing shaders inspired by _Burn-My-Windows_ (patching GLSL `#extension` preprocessor hoisting for NVIDIA/Linux WebGL drivers) and added defensive `stackOrder` guards in `useNextFocusableId` to prevent taskbar-peek crashes.
-- **Desktop Connectome Sim & Static SEO Tuning:** Expanded the `DesktopFly` fruit-fly simulation cap to 30 concurrent flies.
-
----
+- **Purged Heavy Bloat (~100+ MB Stripped):** Removed dead-weight WebGPU models, legacy emulators, and heavy assets like `BoxedWine`, `V86` + `linux.bin`, `DX-Ball`, `Quake3`, `Nostr Messenger`, client-side Stable Diffusion, and `ffmpeg.wasm`.
 
 ## 🖥️ Built-in OS Features
 
@@ -54,15 +47,11 @@ _(More interactive project showcases like SecureImmichServer, AI influencer gene
 
 </details>
 
----
-
 ## 💻 Tech Stack
 
 - **Core Framework:** Next.js, React, TypeScript
 - **Styling & Animation:** Styled-Components, Motion, GLSL Shaders
 - **Virtual OS & Media:** BrowserFS, xterm.js, Monaco Editor, Webamp, FFmpeg (media optimization)
-
----
 
 ## 🏃 Running Locally
 
@@ -91,10 +80,8 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
----
-
 ## 📄 License & Credits
 
 - **SidOS Customizations & Portfolio Content:** Created and Maintained by **Siddharth Rai** under the [MIT License](./LICENSE).
-- **Socials:** ([Website](https://hisiddharth.github.io/) • [GitHub](https://github.com/HiSiddharth) • [LinkedIn](https://www.linkedin.com/in/hisiddharth/) • [Medium](https://hisiddharth.medium.com/)).
+- **Socials:** [Website](https://hisiddharth.github.io/) • [GitHub](https://github.com/HiSiddharth) • [LinkedIn](https://www.linkedin.com/in/hisiddharth/) • [Medium](https://hisiddharth.medium.com/)
 - **Base Desktop Environment:** Created by [Dustin Brett](https://github.com/DustinBrett).
