@@ -24,9 +24,9 @@ Instead of a static webpage, SidOS lets you explore my projects, experience, and
 
 ## 🚀 Featured Work (On Desktop)
 
-- **🤖 SidBot 9000 (Hybrid Edge RAG Digital Twin):** Interactive AI assistant embedded in SidOS with a custom animated SVG avatar, pre-compiled 384-dim semantic vectors (`bge-small-en-v1.5`) + BM25 hybrid retrieval, streaming inference via Cloudflare Workers + Groq (`gpt-oss-20b` with multi-tier failover), `gpt-oss-safeguard-20b` + IP rate-limiting guardrails, a live `</> RAG` telemetry inspector, and OS action triggers.
-- **📄 Interactive Resume (`Resume.pdf`):** Sanitized resume directly readable inside SidOS's built-in PDF viewer.
-- **🔗 Direct Profile Shortcuts:** One-click desktop icons for [GitHub](https://github.com/HiSiddharth), [LinkedIn](https://www.linkedin.com/in/hisiddharth/), and [Medium](https://medium.com/@hisiddharth) powered by custom `BaseURL=External` tab routing.
+- **🤖 SidBot 9000 (Hybrid Edge RAG):** Interactive AI assistant embedded in SidOS with a animated avatar, pre-compiled 384-dim semantic vectors (`bge-small-en-v1.5`) + BM25 hybrid retrieval, streaming inference via Cloudflare Workers + Groq (`gpt-oss-20b` with multi-tier failover), `gpt-oss-safeguard-20b` + IP rate-limiting guardrails, a live `</> RAG` telemetry inspector, and OS action triggers.
+- **📄 Interactive Resume (`Resume.pdf`):** My resume directly downloadable on client system as well as readable inside SidOS's built-in PDF viewer.
+- **🔗 Direct Profile Shortcuts:** One click desktop icons for my [GitHub](https://github.com/HiSiddharth), [LinkedIn](https://www.linkedin.com/in/hisiddharth/), and [Medium](https://medium.com/@hisiddharth) profiles using custom `BaseURL=External` tab routing.
 
 _(More interactive project showcases like SecureImmichServer, AI influencer generation setup with LoRA on local AI pipeline and Podpitara IoT Radio Box are being added soon.)_
 
@@ -34,11 +34,9 @@ _(More interactive project showcases like SecureImmichServer, AI influencer gene
 
 ## 🛠️ Customizations Made for SidOS
 
-- **Engineered External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external profile/project links in native browser tabs.
+- **Added External Link Routing:** Patched the OS execution pipeline (`useFile.ts`) with custom `BaseURL=External` logic to bypass `X-Frame-Options` restrictions and launch external profile/project links in native browser tabs.
 - **Hardware-Decoded Live Wallpapers:** Transcoded and optimized 4K cinematic Star Wars video loops via FFmpeg (`-crf 26`, `-an` stripped audio, `-movflags +faststart` web-streaming headers), cutting file sizes by up to 90% for instant, bufferless playback.
-- **Purged Heavy Bloat (~100+ MB Stripped):** Excised dead-weight WebGPU models, legacy emulators, and heavy assets (`BoxedWine`, `V86` + `linux.bin`, `DX-Ball`, `Quake3`, `Nostr Messenger`, client-side Stable Diffusion, and `ffmpeg.wasm` while preserving lightweight ImageMagick image conversion), cleaning orphaned icons, Terminal/context-menu hooks, and Search indexes.
-- **WebGL Shaders & Window Stability Fixes:** Enabled randomized window-closing shaders inspired by _Burn-My-Windows_ (patching GLSL `#extension` preprocessor hoisting for NVIDIA/Linux WebGL drivers) and added defensive `stackOrder` guards in `useNextFocusableId` to prevent taskbar-peek crashes.
-- **Desktop Connectome Sim & Static SEO Tuning:** Expanded the `DesktopFly` fruit-fly simulation cap to 30 concurrent flies.
+- **Purged Heavy Bloat (~100+ MB Stripped):** Removed dead-weight WebGPU models, legacy emulators, and heavy assets like `BoxedWine`, `V86` + `linux.bin`, `DX-Ball`, `Quake3`, `Nostr Messenger`, client-side Stable Diffusion, and `ffmpeg.wasm`.
 
 ---
 
