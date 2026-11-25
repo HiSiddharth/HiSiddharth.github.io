@@ -22,9 +22,14 @@ if (!idx.hasVectors || !idx.chunkCount) {
 console.log(`✅ Verified rag-index.json: ${idx.docCount} docs, ${idx.chunkCount} chunks, vectors=${idx.hasVectors}`);
 '
 
+if [[ -d "../sidbot-worker/src" ]]; then
+  cp components/apps/SidBot/rag-index.json ../sidbot-worker/src/rag-index.json
+  echo "✅ Synced rag-index.json into ../sidbot-worker/src/rag-index.json"
+fi
+
 if [[ "${1:-}" == "--deploy-worker" ]]; then
   echo "☁️ Deploying Cloudflare Worker..."
   (cd ../sidbot-worker && npx wrangler deploy)
 fi
 
-echo "🎉 Done! Review changes and commit/push components/apps/SidBot/rag-index.json (and components/apps/SidBot/rag-sources/) when ready."
+echo "🎉 Done! Review changes and commit/push components/apps/SidBot/rag-index.json when ready."

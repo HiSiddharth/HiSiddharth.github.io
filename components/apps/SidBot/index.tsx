@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import MarkdownText from "components/apps/SidBot/MarkdownText";
 import {
   buildOfflineFallbackReply,
-  fetchQueryVector,
   loadRagIndex,
   type RagIndex,
   type RetrievalHit,
@@ -165,22 +164,9 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
         !EXPLICIT_TOPIC_RE.test(query);
       const retrievalQuery = isFollowUp ? `${prevUserText} ${query}` : query;
 
-      const queryVec = RAG_INDEX.hasVectors
-        ? await fetchQueryVector(SIDBOT_WORKER_URL, retrievalQuery)
-        : undefined;
-      const retrieval = retrieveTopChunks(
-        RAG_INDEX,
-        retrievalQuery,
-        4,
-        queryVec
-      );
-
-      setLastHits(retrieval.hits);
-      setLastMode(retrieval.mode);
-
-      const contextString = retrieval.hits
-        .map((h) => `[${h.chunk.title} | score=${h.score}]\n${h.chunk.text}`)
-        .join("\n\n");
+      const localRetrieval = retrieveTopChunks(RAG_INDEX, retrievalQuery, 4);
+      setLastHits(localRetrieval.hits);
+      setLastMode(localRetrieval.mode);
 
       const historyPayload = messages
         .filter((m) => m.id !== "welcome")
@@ -196,7 +182,7 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
 
         const result = await streamWorkerReply(
           SIDBOT_WORKER_URL,
-          { context: contextString, history: historyPayload, query },
+          { history: historyPayload, query },
           (partialText) => {
             setMessages((prev) =>
               prev.map((m) =>
@@ -204,6 +190,10 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
               )
             );
             scrollToBottom();
+          },
+          (serverMeta) => {
+            setLastHits(serverMeta.hits);
+            setLastMode(serverMeta.mode);
           }
         );
 
@@ -229,7 +219,10 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
         }
 
         if (result.ok) {
-          const meta = `${retrieval.mode} (${retrieval.retrievalMs}ms) · TTFT ${result.ttft}ms`;
+          const activeMode = result.serverMeta?.mode ?? localRetrieval.mode;
+          const activeMs =
+            result.serverMeta?.retrievalMs ?? localRetrieval.retrievalMs;
+          const meta = `${activeMode} (${activeMs}ms) · TTFT ${result.ttft}ms`;
           setMessages((prev) =>
             prev.map((m) =>
               m.id === botId
@@ -244,8 +237,8 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
         }
       }
 
-      const fallback = buildOfflineFallbackReply(retrieval.hits);
-      const meta = `${retrieval.mode} (${retrieval.retrievalMs}ms) · Offline Fallback`;
+      const fallback = buildOfflineFallbackReply(localRetrieval.hits);
+      const meta = `${localRetrieval.mode} (${localRetrieval.retrievalMs}ms) · Offline Fallback`;
       setMood("speaking");
       setMessages((prev) => {
         const hasBot = prev.some((m) => m.id === botId);
