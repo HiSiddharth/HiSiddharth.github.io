@@ -7,6 +7,32 @@ interface MarkdownTextProps {
 const LINK_RE = /^\[([^\]]+)\]\((https?:\/\/[^)]+)\)$/;
 const EMAIL_RE = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
+const isAllowedHref = (rawUrl: string): boolean => {
+  try {
+    const { hostname, pathname } = new URL(rawUrl);
+    const host = hostname.toLowerCase();
+    const path = pathname.toLowerCase();
+    if (host === "hisiddharth.github.io" || host === "hisiddharth.medium.com") {
+      return true;
+    }
+    if (host === "github.com" && path.startsWith("/hisiddharth")) {
+      return true;
+    }
+    if (
+      (host === "linkedin.com" || host === "www.linkedin.com") &&
+      path.startsWith("/in/hisiddharth")
+    ) {
+      return true;
+    }
+    if (host === "medium.com" && path.startsWith("/@hisiddharth")) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+};
+
 const renderInline = (line: string, keyPrefix: string): ReactNode[] => {
   const re =
     /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)]+\)|https?:\/\/[^\s<>()]+|[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,})/gi;
@@ -33,34 +59,45 @@ const renderInline = (line: string, keyPrefix: string): ReactNode[] => {
       const linkMatch = LINK_RE.exec(token);
       if (linkMatch) {
         const [, label, href] = linkMatch;
-        nodes.push(
-          <a
-            key={tokenKey}
-            href={href}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {label}
-          </a>
-        );
+        if (isAllowedHref(href)) {
+          nodes.push(
+            <a
+              key={tokenKey}
+              href={href}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {label}
+            </a>
+          );
+        } else {
+          nodes.push(label);
+        }
       } else {
         nodes.push(token);
       }
     } else if (token.startsWith("http://") || token.startsWith("https://")) {
       const cleanHref = token.replace(/[.,;:!?]+$/, "");
       const trailing = token.slice(cleanHref.length);
-      nodes.push(
-        <a
-          key={tokenKey}
-          href={cleanHref}
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {cleanHref}
-        </a>
-      );
+      if (isAllowedHref(cleanHref)) {
+        nodes.push(
+          <a
+            key={tokenKey}
+            href={cleanHref}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {cleanHref}
+          </a>
+        );
+      } else {
+        nodes.push(cleanHref);
+      }
       if (trailing) nodes.push(trailing);
-    } else if (EMAIL_RE.test(token)) {
+    } else if (
+      EMAIL_RE.test(token) &&
+      token.toLowerCase() === "siddharthrai2468@gmail.com"
+    ) {
       nodes.push(
         <a key={tokenKey} href={`mailto:${token}`}>
           {token}

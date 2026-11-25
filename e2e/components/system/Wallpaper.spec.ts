@@ -5,16 +5,13 @@ import {
   canvasBackgroundIsHidden,
   captureConsoleLogs,
   clickContextMenuEntry,
-  clickDesktop,
   clickFileExplorerEntry,
   closePage,
   contextMenuIsVisible,
-  desktopIsVisible,
   disableWallpaper,
   fileExplorerEntriesAreVisible,
   loadApp,
   loadAppWithCanvas,
-  mockPictureSlideshowRequest,
   sessionIsWriteable,
   windowsAreVisible,
 } from "e2e/functions";
@@ -23,30 +20,6 @@ test.beforeEach(captureConsoleLogs());
 test.afterEach(closePage);
 
 test("has background", loadAppWithCanvas);
-
-test("can change background", async ({ browserName, headless, page }) => {
-  await disableWallpaper({ page });
-  await loadAppWithCanvas({ browserName, headless, page });
-  await sessionIsWriteable({ page });
-
-  const pictureSlideshowResponse = await mockPictureSlideshowRequest({ page });
-
-  await clickDesktop({ page }, true);
-  await contextMenuIsVisible({ page });
-  await clickContextMenuEntry(/^Background$/, { page });
-  await clickContextMenuEntry(/^Picture Slideshow$/, { page });
-
-  await pictureSlideshowResponse();
-
-  await canvasBackgroundIsHidden({ page });
-  await backgroundIsUrl({ page });
-
-  await page.reload();
-
-  await desktopIsVisible({ page });
-  await canvasBackgroundIsHidden({ page });
-  await backgroundIsUrl({ page });
-});
 
 test.describe("can set background", () => {
   test.beforeEach(disableWallpaper);

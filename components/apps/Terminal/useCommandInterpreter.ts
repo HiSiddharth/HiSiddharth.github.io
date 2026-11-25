@@ -7,7 +7,6 @@ import { colorAttributes, rgbAnsi } from "components/apps/Terminal/color";
 import {
   BACKUP_NAME_SERVER,
   config,
-  LINUX_IMAGE_PATH,
   PI_ASCII,
   PRIMARY_NAME_SERVER,
 } from "components/apps/Terminal/config";
@@ -61,7 +60,6 @@ import {
   SYSTEM_PATH,
 } from "utils/constants";
 import type * as FlyHelp from "utils/desktopFly/help";
-import { transcode } from "utils/ffmpeg";
 import {
   displayVersion,
   getExtension,
@@ -544,7 +542,6 @@ const useCommandInterpreter = (
           results?.forEach(({ ref }) => printLn(ref));
           break;
         }
-        case "ffmpeg":
         case "imagemagick": {
           const [file, format] = commandArgs;
 
@@ -556,8 +553,7 @@ const useCommandInterpreter = (
               (await exists(fullPath)) &&
               !(await lstat(fullPath)).isDirectory()
             ) {
-              const convertOrTranscode =
-                lcBaseCommand === "ffmpeg" ? transcode : convert;
+              const convertOrTranscode = convert;
               const [[newName, newData] = []] = await convertOrTranscode(
                 [[basename(fullPath), await readFile(fullPath)]],
                 ext,
@@ -1175,8 +1171,9 @@ const useCommandInterpreter = (
           break;
         case "wsl":
         case "linux":
-          open("V86", { url: LINUX_IMAGE_PATH });
-          updateRecentFiles(LINUX_IMAGE_PATH, "V86");
+          printLn(
+            "Local x86 VM (V86) was stripped from SidOS for fast load times."
+          );
           break;
         case "xlsx": {
           const [file, format = "xlsx"] = commandArgs;

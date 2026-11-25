@@ -84,7 +84,7 @@ export const NO_RESULTS = "NO_RESULTS";
 
 const SUGGESTED = ["FileExplorer", "Terminal", "Browser", "Paint"];
 
-const GAMES = ["SpaceCadet", "Quake3", "DXBall"];
+const GAMES = ["SpaceCadet", "Chess", "Tic80"];
 
 const METADATA = {
   Documents: {
@@ -494,9 +494,7 @@ const Search: FC<SearchProps> = ({ toggleSearch }) => {
                   </figcaption>
                   <ol>
                     {GAMES.filter(
-                      (game) =>
-                        !(menuWidth < 360 && game === "Quake3") &&
-                        !(menuWidth < 260 && game === "SpaceCadet")
+                      (game) => !(menuWidth < 260 && game === "SpaceCadet")
                     ).map(
                       (game) =>
                         directory[game] && (

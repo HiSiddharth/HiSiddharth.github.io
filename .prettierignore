@@ -5,3 +5,4 @@ out
 playwright-report
 public
 test-results
+components/apps/SidBot/rag-index.json

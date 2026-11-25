@@ -1,3 +1,5 @@
+import ragIndexData from "components/apps/SidBot/rag-index.json";
+
 export interface RagChunk {
   action: string;
   aliases: string[];
@@ -5,7 +7,7 @@ export interface RagChunk {
   id: string;
   len: number;
   text: string;
-  tf: Record<string, number>;
+  tf: Partial<Record<string, number>>;
   title: string;
   vec?: number[];
 }
@@ -17,7 +19,7 @@ export interface RagIndex {
   chunks: RagChunk[];
   docCount: number;
   hasVectors?: boolean;
-  idf: Record<string, number>;
+  idf: Partial<Record<string, number>>;
   version: number;
 }
 
@@ -34,10 +36,17 @@ export interface RetrievalResult {
   retrievalMs: number;
 }
 
+export interface ServerMeta {
+  hits: RetrievalHit[];
+  mode: string;
+  retrievalMs: number;
+}
+
 export interface WorkerStreamResult {
   action?: string;
   blockedMessage?: string;
   ok: boolean;
+  serverMeta?: ServerMeta;
   status?: number;
   text: string;
   ttft: number;
@@ -87,8 +96,11 @@ const STOPWORDS = new Set([
 
 const SYNONYMS: Record<string, string[]> = {
   ai: ["llm", "rag", "lora", "diffusion", "model"],
+  best: ["flagship", "top", "highlights", "overview", "projects"],
+  built: ["projects", "engineered", "created", "flagship"],
   career: ["accenture", "role", "job", "hire", "work"],
   experience: ["accenture", "work", "job", "role"],
+  flagship: ["best", "top", "highlights", "overview", "projects"],
   fun: ["hobbies", "guitar", "game", "star", "wars"],
   gpu: ["4060", "vram", "rtx", "hardware", "8gb"],
   hardware: ["4060", "esp32", "iot", "vram"],
@@ -97,14 +109,33 @@ const SYNONYMS: Record<string, string[]> = {
   instruments: ["guitar", "music"],
   job: ["accenture", "role", "hire", "work"],
   music: ["guitar", "metal", "rock", "tone"],
-  pitch: ["bio", "sid", "siddharth", "role", "accenture"],
+  pitch: ["bio", "role", "accenture", "overview"],
+  portfolio: ["projects", "flagship", "sidos", "sidbot"],
   privacy: ["wireguard", "luks", "immich", "pihole", "encrypted"],
+  project: [
+    "projects",
+    "flagship",
+    "overview",
+    "loom",
+    "revolver",
+    "immich",
+    "lora",
+    "podpitara",
+  ],
+  projects: [
+    "project",
+    "flagship",
+    "overview",
+    "loom",
+    "revolver",
+    "immich",
+    "lora",
+    "podpitara",
+  ],
   security: ["wireguard", "luks", "immich", "pihole", "reverse-engineering"],
   transit: ["podpitara", "commuters", "iot", "radio", "esp32"],
   vpn: ["wireguard", "immich"],
 };
-
-let cachedIndex: RagIndex | undefined;
 
 export const tokenize = (text: string): string[] => {
   const base = text
@@ -135,13 +166,7 @@ const cosine = (a: number[], b: number[]): number => {
   return dot / (Math.sqrt(na) * Math.sqrt(nb));
 };
 
-export const loadRagIndex = async (): Promise<RagIndex> => {
-  if (cachedIndex) return cachedIndex;
-  const res = await fetch("/sidbot/rag-index.json");
-  if (!res.ok) throw new Error(`Failed to load RAG index (${res.status})`);
-  cachedIndex = (await res.json()) as RagIndex;
-  return cachedIndex;
-};
+export const loadRagIndex = (): RagIndex => ragIndexData;
 
 export const retrieveTopChunks = (
   index: RagIndex,
@@ -264,14 +289,17 @@ export const fetchQueryVector = async (
   }
 };
 
+const LEAK_CANARY_RE =
+  /VOICE & CONSISTENCY|STRICT ZERO-HALLUCINATION|IMMUTABLE BOUNDARIES|RAG CONTEXT:|<user_query>/i;
+
 export const streamWorkerReply = async (
   workerUrl: string,
   payload: {
-    context: string;
     history: { content: string; role: string }[];
     query: string;
   },
-  onToken: (fullText: string) => void
+  onToken: (fullText: string) => void,
+  onMeta?: (meta: ServerMeta) => void
 ): Promise<WorkerStreamResult> => {
   const tStart = performance.now();
   try {
@@ -304,6 +332,7 @@ export const streamWorkerReply = async (
     let fullText = "";
     let sseBuffer = "";
     let ttft = 0;
+    let serverMeta: ServerMeta | undefined;
 
     const processLine = (line: string): void => {
       const trimmed = line.trim();
@@ -314,11 +343,22 @@ export const streamWorkerReply = async (
         const json = JSON.parse(raw) as {
           choices?: { delta?: { content?: string } }[];
           response?: string;
+          sidbot_meta?: ServerMeta;
         };
+        if (json.sidbot_meta) {
+          serverMeta = json.sidbot_meta;
+          if (onMeta) onMeta(json.sidbot_meta);
+        }
         const token = json.choices?.[0]?.delta?.content ?? json.response ?? "";
         if (token) {
           if (!ttft) ttft = Math.round(performance.now() - tStart);
           fullText += token;
+          if (LEAK_CANARY_RE.test(fullText)) {
+            onToken(
+              "Nice try — that response was blocked by SidBot's output integrity guard."
+            );
+            return;
+          }
           const visibleText = fullText
             .replace(/\*{0,2}\[?ACTION:[a-z]+\]?\*{0,2}/gi, "")
             .replace(/\[ACTION[^\]]*$/i, "")
@@ -348,6 +388,14 @@ export const streamWorkerReply = async (
 
     await pump();
 
+    if (LEAK_CANARY_RE.test(fullText)) {
+      return {
+        action: undefined,
+        ok: true,
+        text: "Nice try — that response was blocked by SidBot's output integrity guard.",
+        ttft: ttft || Math.round(performance.now() - tStart),
+      };
+    }
     const actionMatch = /\[?ACTION:([a-z]+)\]?/i.exec(fullText);
     const action = actionMatch ? actionMatch[1].toLowerCase() : undefined;
     const cleanText = fullText
@@ -357,6 +405,7 @@ export const streamWorkerReply = async (
     return {
       action,
       ok: true,
+      serverMeta,
       text: cleanText,
       ttft: ttft || Math.round(performance.now() - tStart),
     };
