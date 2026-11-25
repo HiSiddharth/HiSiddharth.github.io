@@ -1,9 +1,19 @@
 ---
 title: Applied AI & Systems Projects
 category: projects
-aliases: podpitara, iot, radio, esp32, immich, wireguard, luks, pihole, lora, influencer, moss, ai loom, revolver, 4060, resume reviewer, fridge, smart home, apk
+aliases: best, top, flagship, highlights, portfolio, projects, built, work, podpitara, iot, radio, esp32, immich, wireguard, luks, pihole, lora, influencer, moss, ai loom, revolver, 4060, resume reviewer, fridge, smart home, apk
 action: open:lora
 ---
+
+## Best & Flagship Projects Overview
+
+Siddharth’s standout engineering projects span local Agentic AI, generative AI optimization, security-hardened infrastructure, and embedded IoT:
+
+- **The AI Loom:** Local-first multi-agent coding orchestrator (Python, LangGraph, LM Studio) swapping Qwen 3.5 9B and Qwen 3 4B in/out of 8GB VRAM to plan, execute, and verify code.
+- **Secure Immich Server:** Self-hosted private photo cloud hardened with WireGuard-only access, Nginx, hostile-by-default UFW firewall, and LUKS encryption at rest.
+- **Local AI Influencer & Custom LoRA:** Character identity LoRA (trained via Fizgig on Kaggle) combined with MOSS-Image in ComfyUI on an 8GB RTX 4060 laptop.
+- **REvolver & Resume Reviewer Pro:** Serverless Google Apps Script + OpenRouter resume-tailoring automation, plus a multi-agent resume critique app on Streamlit Cloud.
+- **Podpitara Transit Audio & Hardware Hacks:** ESP32 streaming radio firmware serving 70,000+ daily commuters (45% BOM cost cut), rooted Android Pi-hole, smart fridge thermostat, and APK telemetry stripping.
 
 ## The AI Loom (Local Multi-Agent Coding Orchestrator)
 
@@ -26,5 +36,5 @@ Trained a custom character identity LoRA (using Fizgig workflows on Kaggle) and 
 ## Hardware Automation & Reverse Engineering
 
 - **Smart Refrigerator Thermostat:** Engineered an ESP32-based controller using dual temperature sensors, Wi-Fi smart-plug integration and auto-defrost logic.
-- **APK Telemetry Stripping:** Regularly decompile and patch Android APKs (`apktool` / `apksigner`) to strip telementry, ads and remove `INTERNET` permissions.
+- **APK Telemetry Stripping:** Regularly decompile and patch Android APKs (`apktool` / `apksigner`) to strip telemetry, ads and remove `INTERNET` permissions.
 - **Podpitara Transit Audio (Internship):** Developed ESP32 audio streaming firmware for transit radio boxes reaching 70,000+ daily commuters, collaborating on hardware revisions that cut BOM production costs by 45%.

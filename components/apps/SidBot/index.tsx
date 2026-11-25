@@ -21,7 +21,9 @@ const RAG_INDEX: RagIndex = loadRagIndex();
 const INDEX_INFO = `${RAG_INDEX.docCount} docs · ${RAG_INDEX.chunkCount} chunks · vec=${RAG_INDEX.hasVectors ? "on" : "off"}`;
 
 const FOLLOWUP_RE =
-  /\b(?:it|its|that|this|those|these|they|them|more|details?|explain|elaborate|else|why)\b/i;
+  /\b(?:it|its|that|this|those|these|they|them|more|details?|explain|elaborate|else|why|continue|above)\b/i;
+const EXPLICIT_TOPIC_RE =
+  /\b(?:loom|revolver|immich|lora|moss|podpitara|accenture|hobbies|guitar|motorcycle|bike|social|contact|email|resume|skill|education|pihole|fridge|apk)\b/i;
 
 const SIDBOT_WORKER_URL =
   process.env.NEXT_PUBLIC_SIDBOT_URL ||
@@ -158,7 +160,9 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
       }
       const isFollowUp =
         Boolean(prevUserText) &&
-        (query.split(/\s+/).length <= 6 || FOLLOWUP_RE.test(query));
+        query.split(/\s+/).length <= 8 &&
+        FOLLOWUP_RE.test(query) &&
+        !EXPLICIT_TOPIC_RE.test(query);
       const retrievalQuery = isFollowUp ? `${prevUserText} ${query}` : query;
 
       const queryVec = RAG_INDEX.hasVectors
