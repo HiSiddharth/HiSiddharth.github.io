@@ -36,10 +36,17 @@ export interface RetrievalResult {
   retrievalMs: number;
 }
 
+export interface ServerMeta {
+  hits: RetrievalHit[];
+  mode: string;
+  retrievalMs: number;
+}
+
 export interface WorkerStreamResult {
   action?: string;
   blockedMessage?: string;
   ok: boolean;
+  serverMeta?: ServerMeta;
   status?: number;
   text: string;
   ttft: number;
@@ -282,14 +289,17 @@ export const fetchQueryVector = async (
   }
 };
 
+const LEAK_CANARY_RE =
+  /VOICE & CONSISTENCY|STRICT ZERO-HALLUCINATION|IMMUTABLE BOUNDARIES|RAG CONTEXT:|<user_query>/i;
+
 export const streamWorkerReply = async (
   workerUrl: string,
   payload: {
-    context: string;
     history: { content: string; role: string }[];
     query: string;
   },
-  onToken: (fullText: string) => void
+  onToken: (fullText: string) => void,
+  onMeta?: (meta: ServerMeta) => void
 ): Promise<WorkerStreamResult> => {
   const tStart = performance.now();
   try {
@@ -322,6 +332,7 @@ export const streamWorkerReply = async (
     let fullText = "";
     let sseBuffer = "";
     let ttft = 0;
+    let serverMeta: ServerMeta | undefined;
 
     const processLine = (line: string): void => {
       const trimmed = line.trim();
@@ -332,11 +343,22 @@ export const streamWorkerReply = async (
         const json = JSON.parse(raw) as {
           choices?: { delta?: { content?: string } }[];
           response?: string;
+          sidbot_meta?: ServerMeta;
         };
+        if (json.sidbot_meta) {
+          serverMeta = json.sidbot_meta;
+          if (onMeta) onMeta(json.sidbot_meta);
+        }
         const token = json.choices?.[0]?.delta?.content ?? json.response ?? "";
         if (token) {
           if (!ttft) ttft = Math.round(performance.now() - tStart);
           fullText += token;
+          if (LEAK_CANARY_RE.test(fullText)) {
+            onToken(
+              "Nice try — that response was blocked by SidBot's output integrity guard."
+            );
+            return;
+          }
           const visibleText = fullText
             .replace(/\*{0,2}\[?ACTION:[a-z]+\]?\*{0,2}/gi, "")
             .replace(/\[ACTION[^\]]*$/i, "")
@@ -366,6 +388,14 @@ export const streamWorkerReply = async (
 
     await pump();
 
+    if (LEAK_CANARY_RE.test(fullText)) {
+      return {
+        action: undefined,
+        ok: true,
+        text: "Nice try — that response was blocked by SidBot's output integrity guard.",
+        ttft: ttft || Math.round(performance.now() - tStart),
+      };
+    }
     const actionMatch = /\[?ACTION:([a-z]+)\]?/i.exec(fullText);
     const action = actionMatch ? actionMatch[1].toLowerCase() : undefined;
     const cleanText = fullText
@@ -375,6 +405,7 @@ export const streamWorkerReply = async (
     return {
       action,
       ok: true,
+      serverMeta,
       text: cleanText,
       ttft: ttft || Math.round(performance.now() - tStart),
     };
