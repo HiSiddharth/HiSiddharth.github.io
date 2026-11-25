@@ -22,4 +22,4 @@ I’m Siddharth Rai (Sid)—originally from Bhopal, currently based in Bengaluru
 - **Music:** I learn and play electric guitar (I really like rock riffs) alongside acoustic guitar, usually routing everything through Reaper and Neural DSP amp sims.
 - **Tinkering & Homelab:** I run a self-hosted Ubuntu Linux homelab, sometimes I decompile random APKs to strip out telemetry and ads, and build ESP32 hardware automations to fix minor annoyances around my apartment.
 - **Motorcycle enthusiast:** I ride and maintain my motorcycle. I am not scared to open my bike up and fix it.
-- **Downtime & Hobbies:** I enjoy PC gaming (especially story-driven games and mods), riding my morotcycle, going to random board game parties and escape rooms with friends, and sometimes alone as well to meet new people.
+- **Downtime & Hobbies:** I enjoy PC gaming (especially story-driven games and mods), riding my motorcycle, going to random board game parties and escape rooms with friends, and sometimes alone as well to meet new people.
