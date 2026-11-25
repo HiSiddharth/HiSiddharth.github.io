@@ -50,7 +50,8 @@ export const EXCLUDED_CONSOLE_LOGS = (
     if (browserName === "chromium") {
       excludedConsoleLogs.push(
         "Failed to create WebGPU Context Provider",
-        "WebGPU is experimental on this platform"
+        "WebGPU is experimental on this platform",
+        "GPU stall due to ReadPixels"
       );
     } else if (browserName === "firefox") {
       excludedConsoleLogs.push(
