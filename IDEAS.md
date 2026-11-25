@@ -19,7 +19,7 @@
 ### 2. LoRA / AI Influencer Showoff (Local 8GB VRAM Pipeline)
 
 - Showcase of custom **AI Influencer** running locally on **RTX 4060 Laptop (8GB VRAM / 24GB RAM)**
-- **Dual-LoRA Ablation Viewer:** Side-by-side / slider comparison (`Base` vs `+Character LoRA` vs `+Moss LoRA` vs `Stacked Final`) highlighting concept-bleed control
+- **LoRA Comparison Viewer:** Side-by-side / slider comparison (`Base` vs `+Character LoRA`) highlighting concept-bleed control
 - **Engineering Telemetry Card:** Quantization, VRAM footprint, sampler/CFG recipe, and workflow JSON inspector
 - **OS Integration:** One-click **"Set as SidOS Wallpaper"** directly from generated renders
 
