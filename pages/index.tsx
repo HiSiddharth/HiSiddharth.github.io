@@ -1,5 +1,6 @@
 import AppsLoader from "components/system/Apps/AppsLoader";
 import Desktop from "components/system/Desktop";
+import QuickStart from "components/system/QuickStart";
 import Taskbar from "components/system/Taskbar";
 import useGlobalErrorHandler from "hooks/useGlobalErrorHandler";
 import useGlobalKeyboardShortcuts from "hooks/useGlobalKeyboardShortcuts";
@@ -20,6 +21,7 @@ const Index: FC = () => {
     <Desktop>
       <Taskbar />
       <AppsLoader />
+      <QuickStart />
     </Desktop>
   );
 };
