@@ -31,6 +31,10 @@ type MonacoProcessArguments = {
   editor?: Monaco.editor.IStandaloneCodeEditor;
 };
 
+type SidBotProcessArguments = {
+  initialQuery?: string;
+};
+
 type PdfProcessArguments = {
   count?: number;
   page?: number;
@@ -71,7 +75,8 @@ export type ProcessArguments = BaseProcessArguments &
   DialogProcessArguments &
   MediaPlayerProcessArguments &
   MonacoProcessArguments &
-  PdfProcessArguments;
+  PdfProcessArguments &
+  SidBotProcessArguments;
 
 export type ProcessElements = {
   componentWindow?: HTMLElement;

@@ -14,7 +14,7 @@ import AppContainer, {
   useAppContainer,
 } from "components/system/Apps/AppContainer";
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
-import { useProcessesActions } from "contexts/process";
+import { useProcess, useProcessesActions } from "contexts/process";
 
 const RAG_INDEX: RagIndex = loadRagIndex();
 const INDEX_INFO = `${RAG_INDEX.docCount} docs · ${RAG_INDEX.chunkCount} chunks · vec=${RAG_INDEX.hasVectors ? "on" : "off"}`;
@@ -82,7 +82,9 @@ const ACTION_LABELS: Record<string, string> = {
 const SidBot: FC<ComponentProcessProps> = ({ id }) => {
   const containerProps = useAppContainer(id);
   const { setLoading } = containerProps;
+  const { initialQuery } = useProcess(id);
   const { open } = useProcessesActions();
+  const triggeredInitialQueryRef = useRef(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       action: "resume",
@@ -259,6 +261,22 @@ const SidBot: FC<ComponentProcessProps> = ({ id }) => {
     },
     [busy, messages, scrollToBottom]
   );
+
+  useEffect(() => {
+    const query = initialQuery?.trim();
+    const timerId = query
+      ? window.setTimeout(() => {
+          if (!triggeredInitialQueryRef.current) {
+            triggeredInitialQueryRef.current = true;
+            sendMessage(query);
+          }
+        }, 60)
+      : 0;
+
+    return () => {
+      if (timerId) window.clearTimeout(timerId);
+    };
+  }, [initialQuery, sendMessage]);
 
   return (
     <AppContainer {...containerProps} StyledComponent={StyledSidBot}>
